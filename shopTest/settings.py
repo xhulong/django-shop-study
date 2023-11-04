@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'ckeditor_demo',    # 富文本编辑器
+    'django_filters',   # 过滤器
     'apps.user'
 ]
 
@@ -143,9 +144,23 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    # 指定用于支持coreapi的Schema
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    # 指定过滤器
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
+    # 限流 一分钟只能访问三次
+    # 'DEFAULT_THROTTLE_CLASSES': [
+    #     'rest_framework.throttling.AnonRateThrottle',
+    #     'rest_framework.throttling.UserRateThrottle'
+    # ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '1/min',
+        'user': '1/min'
+    }
 }
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # token有效期
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # token有效期
     'REFRESH_TOKEN_LIFETIME': timedelta(days=14),  # 刷新token有效期
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -161,6 +176,17 @@ SIMPLE_JWT = {
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     'USER_ID_CLAIM': 'user_id',
 }
-AUTHENTICATION_BACKENDS = [
+
+AUTHENTICATION_BACKENDS = [ # 自定义用户登录认证，实现多字段登录
     'common.authenticate.CustomBackend'
 ]
+
+# 文件上传的保存路径
+MEDIA_ROOT = BASE_DIR / 'files'
+
+# 文件上传的访问路径
+MEDIA_URL = '/files/'
+TENCENT_SMS_APP_ID = '1400740456'
+TENCENT_SMS_APP_KEY = '1d2f79486e383269a90e4151c41f869a'
+TENCENT_SMS_SIGN = '小O校园公众号'
+TENCENT_SMS_TEMPLATE_ID = 1566290

@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+import pytz  # 导入pytz库
+
 from django.db import models
 from common.db import BaseModel
 # Create your models here.
@@ -7,7 +10,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser, BaseModel):
     mobile = models.CharField(max_length=11, verbose_name="手机号",default="")
-    avatar = models.ImageField(upload_to="avatar", verbose_name="用户头像", null=True, blank=True)
+    avatar = models.ImageField(verbose_name="用户头像", null=True, blank=True)
     money = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="用户余额", default=0)
     integral = models.IntegerField(verbose_name="用户积分", default=0)
 
@@ -53,6 +56,20 @@ class VerifyCode(models.Model):
     code = models.CharField(max_length=10, verbose_name="验证码")
     mobile = models.CharField(max_length=11, verbose_name="手机号")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+
+    def is_expired(self, expiration_minutes=5):
+        """
+        检查验证码是否已经过期
+        :param expiration_minutes: 验证码的有效分钟数，默认为 5 分钟
+        """
+        now = datetime.now(pytz.UTC)  # 将now调整为UTC时区的offset-aware datetime
+
+        expiration_time = self.create_time + timedelta(minutes=expiration_minutes)
+
+        if now > expiration_time:
+            return True
+        else:
+            return False
     class Meta:
         db_table = "ta_verifycode"
         verbose_name = "验证码"
