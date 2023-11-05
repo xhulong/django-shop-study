@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/user/', include('apps.user.urls'), name='user'),
     path('docs/', include_docs_urls(title='API接口文档', description='xxx描述')),
     re_path(r'files/(.+?)/', FileView.as_view(), name='file'),
+    path('api/goods/', include('apps.goods.urls'), name='goods'),
 ]

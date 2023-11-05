@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'ckeditor_demo',    # 富文本编辑器
     'django_filters',   # 过滤器
-    'apps.user'
+    'apps.user',
+    'apps.goods',
 ]
 
 MIDDLEWARE = [
@@ -147,7 +148,10 @@ REST_FRAMEWORK = {
     # 指定用于支持coreapi的Schema
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     # 指定过滤器
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter'
+    ],
     'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
     # 限流 一分钟只能访问三次
     # 'DEFAULT_THROTTLE_CLASSES': [
@@ -190,3 +194,12 @@ TENCENT_SMS_APP_ID = '1400740456'
 TENCENT_SMS_APP_KEY = '1d2f79486e383269a90e4151c41f869a'
 TENCENT_SMS_SIGN = '小O校园公众号'
 TENCENT_SMS_TEMPLATE_ID = 1566290
+
+# 邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.ym.163.com'
+EMAIL_PORT = 465  # 通常是 587 或 465
+EMAIL_USE_SSL = True  # 使用 TLS 加密 (或使用 EMAIL_USE_SSL = True 如果需要 SSL 加密)
+EMAIL_HOST_USER = 'max@tabz.work'
+EMAIL_HOST_PASSWORD = 'LIpaoxiao0829'
+DEFAULT_FROM_EMAIL = 'max@tabz.work'

@@ -2,6 +2,7 @@ import re
 import random
 
 from django.conf import settings
+from django.shortcuts import render
 from rest_framework import status, mixins
 from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
@@ -14,9 +15,10 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.user.models import User, Address, VerifyCode
-from apps.user.permissions import IsOwnerOrReadOnly, IsAddressOwnerOrReadOnly
 from apps.user.serializer import UserSerializer, AddressSerializer
+from common.permissions import IsAddressPermissions,IsOwnerOrReadOnly
 from common.tencent_sms import SendTenSms
+from common.utils import send_email
 
 
 # Create your views here.
@@ -75,9 +77,9 @@ class RegisterView(APIView):
 
 # 获取用户信息
 class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
-    permission_classes = [IsAuthenticated,IsOwnerOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
     # 上传头像
     def upload_avatar(self, request, *args, **kwargs):
@@ -142,8 +144,12 @@ class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
 
     # 修改用户昵称
     def update_last_name(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', True)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
         last_name = request.data.get('last_name')
-        if last_name is None:
+        if last_name is None or last_name == "":
             return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
         obj = request.user
         obj.last_name = last_name
@@ -212,7 +218,7 @@ class AddressView(GenericViewSet,
                     mixins.DestroyModelMixin):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
-    permission_classes = [IsAuthenticated, IsAddressOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsAddressPermissions]
 
     # 重写list方法
     def list(self, request, *args, **kwargs):
@@ -262,3 +268,18 @@ class OperateTenSms(APIView):
     def get_random_code(self):
         code = random.randrange(1000, 999999)
         return code
+
+# 邮箱发送接口
+class OperateEmail(APIView):
+    # 限制访问频率
+    throttle_classes = [AnonRateThrottle]
+    def post(self, request):
+        subject = 'Hello, this is the subject'
+        message = 'This is the email message.'
+        from_email = 'max@tabz.work'
+        recipient_list = ['927266886@qq.com']
+        print(111)
+        if send_email(subject, message, from_email, recipient_list):
+            return render(request, 'success_template.html', {'message': 'Email sent successfully!'})
+        else:
+            return render(request, 'error_template.html', {'message': 'Email sending failed!'})
