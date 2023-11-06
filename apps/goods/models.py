@@ -48,7 +48,7 @@ class GoodsDetail(BaseModel):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.goods.name
+        return self.goods.title
 
 # 商品轮播图
 class GoodsBanner(BaseModel):

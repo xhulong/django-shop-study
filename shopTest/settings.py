@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',  # 支持跨域请求
     'rest_framework',
     'rest_framework_simplejwt',
-    'ckeditor_demo',    # 富文本编辑器
+    'ckeditor',    # 富文本编辑器
     'django_filters',   # 过滤器
     'apps.user',
     'apps.goods',
@@ -203,5 +203,3 @@ EMAIL_USE_SSL = True  # 使用 TLS 加密 (或使用 EMAIL_USE_SSL = True 如果
 EMAIL_HOST_USER = 'max@tabz.work'
 EMAIL_HOST_PASSWORD = 'LIpaoxiao0829'
 DEFAULT_FROM_EMAIL = 'max@tabz.work'
-
-SIMPLEUI_HOME_TITLE = '百度一下你就知道'

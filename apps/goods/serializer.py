@@ -14,7 +14,7 @@ class GoodsSerializer(serializers.ModelSerializer):
 class GoodsDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = GoodsDetail
-        fields = '__all__'
+        fields = ['producer', 'norms', 'detail']
 
 class GoodsBannerSerializer(serializers.ModelSerializer):
     class Meta:

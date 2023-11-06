@@ -4,9 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.goods.models import GoodsGroup, GoodsBanner, Goods, GoodsCollection
+from apps.goods.models import GoodsGroup, GoodsBanner, Goods, GoodsCollection, GoodsDetail
 from apps.goods.serializer import GoodsGroupSerializer, GoodsBannerSerializer, GoodsSerializer, \
-    GoodsCollectionSerializer
+    GoodsCollectionSerializer, GoodsDetailSerializer
 
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
@@ -42,10 +42,12 @@ class IndexView(APIView):
         # 1.4 商品列表
         goods = Goods.objects.filter(is_on_sale=True)
         # 序列化
-        groups_data = GoodsGroupSerializer(groups, many=True).data
-        banners_data = GoodsBannerSerializer(banners, many=True).data
-        recommends_data = GoodsSerializer(recommends, many=True).data
-        goods_data = GoodsSerializer(goods, many=True).data
+        # 序列化如果有图片，返回数据需要补全完整得到图片路径，所以需要传入request
+        groups_data = GoodsGroupSerializer(groups, many=True,context={'request': request}).data
+        banners_data = GoodsBannerSerializer(banners, many=True,context={'request': request}).data
+        recommends_data = GoodsSerializer(recommends, many=True,context={'request': request}).data
+        goods_data = GoodsSerializer(goods, many=True,context={'request': request}).data
+
         return Response({
             'groups': groups_data,
             'banners': banners_data,
@@ -59,12 +61,20 @@ class GoodsView(ReadOnlyModelViewSet):
     filterset_fields = ['group', 'recommend']
     ordering_fields = ['price', 'sales']
 
+# 商品详情
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.sales += 1
-        instance.save()
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        result = serializer.data
+        # 获取商品详情
+        try:
+            goods_detail = GoodsDetail.objects.get(goods=instance)
+            goods_detail_data = GoodsDetailSerializer(goods_detail).data
+            result['detailInfo'] = goods_detail_data
+        except GoodsDetail.DoesNotExist:
+            result['detailInfo'] = ''
+        return Response(result)
+
 
 class GoodsCollectionView(GenericViewSet,
                     mixins.CreateModelMixin,
@@ -98,3 +108,7 @@ class GoodsCollectionView(GenericViewSet,
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+# 获取商品分类
+class GoodsGroupView(mixins.ListModelMixin, GenericViewSet):
+    queryset = GoodsGroup.objects.filter(status=True)
+    serializer_class = GoodsGroupSerializer

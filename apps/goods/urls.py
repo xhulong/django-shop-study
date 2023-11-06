@@ -11,4 +11,6 @@ urlpatterns = [
     path('collection/', views.GoodsCollectionView.as_view({'post': 'create', 'get': 'list'}), name='collection'),
     # 商品取消收藏
     path('collection/<int:pk>/', views.GoodsCollectionView.as_view({'delete': 'destroy'}), name='collection'),
+    # 获取商分类
+    path('group/', views.GoodsGroupView.as_view({'get': 'list'}), name='group'),
 ]
