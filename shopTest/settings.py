@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_filters',   # 过滤器
     'apps.user',
     'apps.goods',
+    'apps.school',
 ]
 
 MIDDLEWARE = [
