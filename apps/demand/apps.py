@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
 
-class GoodsConfig(AppConfig):
+class DemandConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.goods'
+    name = 'apps.demand'
+    verbose_name = '需求管理'

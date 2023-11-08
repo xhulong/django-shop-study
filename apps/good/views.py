@@ -1,11 +1,10 @@
-from django.shortcuts import render
 from rest_framework import mixins, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.goods.models import GoodsGroup, GoodsBanner, Goods, GoodsCollection, GoodsDetail
-from apps.goods.serializer import GoodsGroupSerializer, GoodsBannerSerializer, GoodsSerializer, \
+from apps.good.models import GoodsGroup, GoodsBanner, Goods, GoodsCollection, GoodsDetail
+from apps.good.serializer import GoodsGroupSerializer, GoodsBannerSerializer, GoodsSerializer, \
     GoodsCollectionSerializer, GoodsDetailSerializer
 
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
@@ -52,7 +51,7 @@ class IndexView(APIView):
             'groups': groups_data,
             'banners': banners_data,
             'recommends': recommends_data,
-            'goods': goods_data
+            'good': goods_data
         })
 
 class GoodsView(ReadOnlyModelViewSet):
@@ -91,7 +90,7 @@ class GoodsCollectionView(GenericViewSet,
         if user.id != int(params_user_id):
             return Response({'error': '没有权限'}, status=status.HTTP_400_BAD_REQUEST)
         # 判断是否已经收藏
-        goods_id = request.data.get('goods')
+        goods_id = request.data.get('good')
         if GoodsCollection.objects.filter(user=user, goods_id=goods_id).exists():
             return Response({'error': '已经收藏'}, status=status.HTTP_400_BAD_REQUEST)
 

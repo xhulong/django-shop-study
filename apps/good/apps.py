@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class SchoolConfig(AppConfig):
+class GoodsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.school'
-    verbose_name = '学校管理'
+    name = 'apps.good'
+    verbose_name = '闲置管理'

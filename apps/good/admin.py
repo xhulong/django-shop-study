@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.goods.models import GoodsGroup, Goods, GoodsDetail, GoodsBanner, GoodsCollection
+from apps.good.models import GoodsGroup, Goods, GoodsDetail, GoodsBanner, GoodsCollection
 
 class GoodsGroupAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'image', 'status']
@@ -9,10 +9,10 @@ class GoodsGroupAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 class GoodsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'group', 'title', 'desc', 'price', 'cover', 'stock', 'sales', 'is_on_sale', 'recommend']
+    list_display = ['id', 'group', 'title', 'desc', 'price', 'cover', 'stock', 'is_on_sale', 'recommend']
     list_display_links = ['id', 'title']
-    search_fields = ['group', 'title', 'desc', 'price', 'cover', 'stock', 'sales', 'is_on_sale', 'recommend']
-    list_filter = ['group', 'title', 'desc', 'price', 'cover', 'stock', 'sales', 'is_on_sale', 'recommend']
+    search_fields = ['group', 'title', 'desc', 'price', 'cover', 'stock', 'is_on_sale', 'recommend']
+    list_filter = ['group', 'title', 'desc', 'price', 'cover', 'stock', 'is_on_sale', 'recommend']
     list_per_page = 10
 
 class GoodsDetailAdmin(admin.ModelAdmin):

@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-gz6le$+9%zan+7w=qay@_3ju*p=t_r)ul1#1_^d7%9myfn1j#8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*'
+]
 
 
 # Application definition
@@ -44,8 +46,10 @@ INSTALLED_APPS = [
     'ckeditor',    # 富文本编辑器
     'django_filters',   # 过滤器
     'apps.user',
-    'apps.goods',
     'apps.school',
+    'apps.good',
+    'apps.activity',
+    'apps.demand'
 ]
 
 MIDDLEWARE = [

@@ -10,8 +10,3 @@ class SchoolUserPermissionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchoolUserPermissions
         fields = ['id', 'user', 'school', 'permission', 'is_disable']
-
-class SchoolConfigSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SchoolConfig
-        fields = ['id', 'school', 'config']

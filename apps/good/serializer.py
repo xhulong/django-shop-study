@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.goods.models import GoodsGroup, Goods, GoodsDetail, GoodsBanner, GoodsCollection
+from apps.good.models import GoodsGroup, Goods, GoodsDetail, GoodsBanner, GoodsCollection
 
 class GoodsGroupSerializer(serializers.ModelSerializer):
     class Meta:

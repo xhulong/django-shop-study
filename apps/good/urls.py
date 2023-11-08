@@ -1,12 +1,12 @@
 from django.urls import path
-from apps.goods import views
+from apps.good import views
 urlpatterns = [
     # 首页数据获取
     path('index/', views.IndexView.as_view(), name='index'),
     # 商品列表
-    path('list/', views.GoodsView.as_view({'get': 'list'}), name='goods'),
+    path('list/', views.GoodsView.as_view({'get': 'list'}), name='good'),
     # 商品详情
-    path('detail/<int:pk>/', views.GoodsView.as_view({'get': 'retrieve'}), name='goods'),
+    path('detail/<int:pk>/', views.GoodsView.as_view({'get': 'retrieve'}), name='good'),
     # 商品收藏和获取收藏列表
     path('collection/', views.GoodsCollectionView.as_view({'post': 'create', 'get': 'list'}), name='collection'),
     # 商品取消收藏
