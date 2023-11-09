@@ -18,7 +18,7 @@ from apps.user.models import User, Address, VerifyCode
 from apps.user.serializer import UserSerializer, AddressSerializer
 from common.permissions import IsAddressPermissions,IsOwnerOrReadOnly
 from common.tencent_sms import SendTenSms
-from common.utils import send_email
+from common.utils import send_email,random_username
 
 
 # Create your views here.
@@ -33,16 +33,25 @@ class LoginView(TokenObtainPairView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
         result = serializer.validated_data
-        result['token'] = result.pop('access')  # 将access改为token
-        result['user_id'] = serializer.user.id
-        result['username'] = serializer.user.username
-        result['email'] = serializer.user.email
-        result['mobile'] = serializer.user.mobile
-        result['money'] = serializer.user.money
-        result['integral'] = serializer.user.integral
+        userInfo = {
+            'user_id': serializer.user.id,
+            'username': serializer.user.username,
+            'email': serializer.user.email,
+            'mobile': serializer.user.mobile,
+            'money': serializer.user.money,
+            'integral': serializer.user.integral,
+        }
+        data = {
+            'message': '登录成功',
+            'data': {
+                'userInfo': userInfo,
+                'token': result['access'],
+                'refresh': result['refresh'],
+            }
+        }
 
 
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
 
 # 注册
 class RegisterView(APIView):
@@ -51,28 +60,30 @@ class RegisterView(APIView):
         data = request.data
         username = data.get('username')
         password = data.get('password')
-        password_confirm = data.get('password_confirm')
-        email = data.get('email')
-        if all([username, password, password_confirm, email]) is False:
+        code = data.get('code')
+        if all([username, password]) is False:
             return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
-        if password != password_confirm:
-            return Response({'message': '两次密码不一致'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(password) < 6:
+            return Response({'message': '密码长度不能小于6位'}, status=status.HTTP_400_BAD_REQUEST)
+        # 校验验证码是否正确
+        try:
+            verify_code = VerifyCode.objects.get(mobile=username, code=code)
+            # 校验验证码是否过期
+            if verify_code.is_expired(expiration_minutes=5):
+                return Response({'message': '验证码过期'}, status=status.HTTP_400_BAD_REQUEST)
+        except VerifyCode.DoesNotExist:
+            return Response({'message': '验证码错误'}, status=status.HTTP_400_BAD_REQUEST)
         # 校验用户是否存在
         if User.objects.filter(username=username).exists():
             return Response({'message': '用户已存在'}, status=status.HTTP_400_BAD_REQUEST)
-        # 校验邮箱格式
-        if re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email) is None:
-            return Response({'message': '邮箱格式不正确'}, status=status.HTTP_400_BAD_REQUEST)
-        # 校验邮箱格式和是否绑定
-        if User.objects.filter(email=email).exists():
-            return Response({'message': '邮箱已绑定'}, status=status.HTTP_400_BAD_REQUEST)
         # 保存用户
-        user = User.objects.create_user(username=username, password=password, email=email)
+
+        user = User.objects.create_user(username=random_username(), password=password,mobile=username)
+        # 删除验证码
+        VerifyCode.objects.filter(mobile=username).delete()
         # 返回用户信息
         return Response({
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
+            'message': '注册成功'
         }, status=status.HTTP_201_CREATED)
 
 # 获取用户信息
