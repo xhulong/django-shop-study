@@ -283,3 +283,72 @@ class OperateEmail(APIView):
             return render(request, 'success_template.html', {'message': 'Email sent successfully!'})
         else:
             return render(request, 'error_template.html', {'message': 'Email sending failed!'})
+
+# 微信小程序登录
+# class WechatLogin(APIView):
+#     def post(self, request):
+#         data = request.data
+#         code = data.get('code')
+#         if code is None:
+#             return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
+#         # 获取openid
+#         from common.wechat import WeChat
+#         wechat = WeChat()
+#         openid = wechat.get_openid(code)
+#         if openid is None:
+#             return Response({'message': '登录失败'}, status=status.HTTP_400_BAD_REQUEST)
+#         # 判断用户是否存在
+#         if User.objects.filter(username=openid).exists():
+#             user = User.objects.get(username=openid)
+#         else:
+#             user = User.objects.create_user(username=openid, password=openid)
+#         # 生成token
+#         from rest_framework_simplejwt.tokens import RefreshToken
+#         refresh = RefreshToken.for_user(user)
+#         return Response({
+#             'token': str(refresh.access_token),
+#             'user_id': user.id,
+#             'username': user.username,
+#             'email': user.email,
+#         }, status=status.HTTP_200_OK)
+
+
+# class WechatLogin(APIView):
+#
+#     """ 获取opeid存储用户信息"""
+#
+#     appid = 'wxxxxxxxx'
+#     appsecret = ''
+#     jscode2session_url = "https://api.weixin.qq.com/sns/jscode2session"
+#
+#     def post(self, request, format=None):
+#         # 获取到前端回传过来的code
+#         code = json.loads(request.body).get('code')  # 这个code有效期为5分钟
+#         # 构造向wx发送请求的url
+#         url = f"{self.jscode2session_url}?appid={self.appid}&secret={self.appsecret}&js_code={code}&grant_type=authorization_code"
+#         # 向微信服务器发起get请求
+#         response = requests.get(url)
+#         try:
+#             # 这里就是拿到的openid和session_key
+#             openid = response.json()['openid']
+#             session_key = response.json()['session_key']
+#         except KeyError:
+#             return Response({'code': 'fail'})
+#         else:
+#             # 主代码块执行完执行到这里，获取或保存用户
+#             user, iscreated = User.objects.get_or_create(
+#                 username=openid,
+#                 password=openid,
+#                 defaults={'username': openid}
+#             )
+#
+#             # 采用JWT登录的话，这里就返回token信息
+#             from foodapi.utils import get_tokens_for_user
+#             token_dict = get_tokens_for_user(user)
+#             try:
+#                 userinfo = user.userinfo
+#             except UserInfo.DoesNotExist:
+#                 userinfo, isupdated = UserInfo.objects.update_or_create(owner=user, name=openid, defaults={'owner': user})
+#             avatar = f"http://{request.get_host()}/{str(userinfo.avatar)}"
+#             return Response({"code": "success", "openid": openid, "name": userinfo.name, "avatar": avatar, **token_dict}, status=status.HTTP_200_OK)
+

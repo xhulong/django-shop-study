@@ -3,8 +3,9 @@ from common.db import BaseModel
 
 class Task(BaseModel):
     STATUS_CHOICES = (
-        ('open', '开放'),
+        ('open', '正常'),
         ('closed', '关闭'),
+        ('expired', '过期'),
     )
 
     TYPE_CHOICES = (

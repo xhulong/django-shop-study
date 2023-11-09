@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'apps.school',
     'apps.good',
     'apps.activity',
-    'apps.demand'
+    'apps.demand',
+    'apps.order',
+    'apps.global',
 ]
 
 MIDDLEWARE = [
