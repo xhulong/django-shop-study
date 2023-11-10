@@ -40,6 +40,7 @@ class LoginView(TokenObtainPairView):
             'mobile': serializer.user.mobile,
             'money': serializer.user.money,
             'integral': serializer.user.integral,
+            'avatar': serializer.user.avatar,
         }
         data = {
             'message': '登录成功',
@@ -52,6 +53,38 @@ class LoginView(TokenObtainPairView):
 
 
         return Response(data, status=status.HTTP_200_OK)
+    #修改密码
+    def put(self, request, *args, **kwargs):
+        # 获取参数
+        data = request.data
+        phone = data.get('phone')
+        password = data.get('password')
+        code = data.get('code')
+        print(phone,password,code)
+        if all([phone, password]) is False:
+            return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(password) < 6:
+            return Response({'message': '密码长度不能小于6位'}, status=status.HTTP_400_BAD_REQUEST)
+        # 校验验证码是否正确
+        try:
+            verify_code = VerifyCode.objects.get(mobile=phone, code=code)
+            # 校验验证码是否过期
+            if verify_code.is_expired(expiration_minutes=5):
+                return Response({'message': '验证码过期'}, status=status.HTTP_400_BAD_REQUEST)
+        except VerifyCode.DoesNotExist:
+            return Response({'message': '验证码错误'}, status=status.HTTP_400_BAD_REQUEST)
+        # 校验用户是否存在
+        if User.objects.filter(mobile=phone).exists():
+            user = User.objects.get(mobile=phone)
+            user.set_password(password)
+            user.save()
+            # 删除验证码
+            VerifyCode.objects.filter(mobile=phone).delete()
+            return Response({
+                'message': '修改成功'
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': '用户不存在'}, status=status.HTTP_400_BAD_REQUEST)
 
 # 注册
 class RegisterView(APIView):
@@ -167,29 +200,7 @@ class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
         obj.save()
         return Response({'message': '修改成功'}, status=status.HTTP_200_OK)
 
-    # 修改密码，使用验证码
-    def update_password(self, request, *args, **kwargs):
-        mobile = request.data.get('mobile')
-        code = request.data.get('code')
-        codeId = request.data.get('codeId')
-        password = request.data.get('password')
-        password_confirm = request.data.get('password_confirm')
-        # 校验验证码
-        result = self.verif_code(mobile, codeId, code)
-        if result is not None:
-            return result
-        # 校验密码
-        if password != password_confirm:
-            return Response({'message': '两次密码不一致'}, status=status.HTTP_400_BAD_REQUEST)
-        # 修改密码
-        obj = request.user
-        if obj.mobile != mobile:
-            return Response({'message': '手机号不正确'}, status=status.HTTP_400_BAD_REQUEST)
-        obj.set_password(password)
-        obj.save()
-        # 删除验证码
-        VerifyCode.objects.filter(id=codeId).delete()
-        return Response({'message': '修改成功'}, status=status.HTTP_200_OK)
+
 
     # 封装验证码
     @staticmethod
@@ -208,6 +219,9 @@ class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
         except VerifyCode.DoesNotExist:
             return Response({'message': '验证码错误'}, status=status.HTTP_400_BAD_REQUEST)
         return None
+
+
+
 
 
 # 文件访问

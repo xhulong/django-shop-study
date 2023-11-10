@@ -28,7 +28,7 @@ urlpatterns = [
     # 修改用户昵称
     path('last_name/<int:pk>/', views.UserInfoView.as_view({'put': 'update_last_name'}), name='user_nickname'),
     # 修改用户密码
-    path('password/<int:pk>/', views.UserInfoView.as_view({'put': 'update_password'}), name='user_password'),
+    path('password/', LoginView.as_view(), name='user_password'),
     # 发送邮箱
     path('email/send/', views.OperateEmail.as_view(), name='send_email'),
 ]
