@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'ckeditor',    # 富文本编辑器
     'django_filters',   # 过滤器
+    'solo',    # 单例模型
     'apps.user',
     'apps.school',
     'apps.good',
@@ -53,7 +54,6 @@ INSTALLED_APPS = [
     'apps.order',
     'apps.global',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
