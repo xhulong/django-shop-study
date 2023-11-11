@@ -28,4 +28,6 @@ urlpatterns = [
     # 发送邮箱
     path('email/send/', views.OperateEmail.as_view(), name='send_email'),
     path('bind_account/', views.UserInfoView.as_view({'put': 'bind_account'}), name='bind_account'),
+    # 小程序登录
+    path('Login_capLogin/', views.MiniWechatLogin.as_view(), name='wx_login'),
 ]

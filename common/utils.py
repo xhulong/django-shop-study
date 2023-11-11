@@ -25,12 +25,17 @@ def random_username():
             break
     return username
 
+
+from apps.global_system.models import SiteConfiguration, WeChatConfiguration
 # 获取系统配置信息，比如小程序appid等
 class GetAppConfig:
     def __init__(self):
-        from apps.global_system.models import AppConfiguration
-        self.app_config = AppConfiguration.objects.first()
+        self.app_config = SiteConfiguration.objects.first()
+        self.wechat_config = WeChatConfiguration.objects.first()
 
 
     def get_app_config(self):
         return self.app_config
+
+    def get_wechat_config(self):
+        return self.wechat_config

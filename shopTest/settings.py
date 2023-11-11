@@ -47,12 +47,12 @@ INSTALLED_APPS = [
     'django_filters',   # 过滤器
     'solo',    # 单例模型
     'apps.user',
+    'apps.global_system',
     'apps.school',
     'apps.good',
     'apps.activity',
     'apps.demand',
     'apps.order',
-    'apps.global_system',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -236,7 +236,7 @@ class IndexConfiguration(SingletonModel):
     app_configuration = models.OneToOneField(AppConfiguration, on_delete=models.CASCADE,
                                               related_name='index_configuration', verbose_name='关联的app配置')
     # 首页轮播图
-    index_carousel = models.ManyToManyField('apps.global_system.Carousel', related_name='index_carousel', blank=True, verbose_name='首页轮播图')
+    index_carousel = models.ManyToManyField('global_system.Carousel', related_name='index_carousel', blank=True, verbose_name='首页轮播图')
     # 首页title
     index_title = models.CharField(max_length=200, verbose_name='首页title', null=True, blank=True)
     # 首页description
