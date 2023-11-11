@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('global', '0004_siteconfiguration'),
+        ('global_system', '0004_siteconfiguration'),
     ]
 
     operations = [
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('wechat_app_name', models.CharField(blank=True, max_length=200, null=True, verbose_name='小程序名字')),
                 ('wechat_app_appid', models.CharField(blank=True, max_length=200, null=True, verbose_name='小程序AppID')),
                 ('wechat_app_appsecret', models.CharField(blank=True, max_length=200, null=True, verbose_name='小程序AppSecret')),
-                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='wechat_configuration', to='global.siteconfiguration', verbose_name='关联的系统配置')),
+                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='wechat_configuration', to='global_system.siteconfiguration', verbose_name='关联的系统配置')),
             ],
             options={
                 'verbose_name': '微信配置',

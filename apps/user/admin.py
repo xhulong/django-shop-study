@@ -2,16 +2,16 @@ from django.contrib import admin
 from apps.user.models import User, Address, Area, VerifyCode
 from django.contrib.auth.admin import UserAdmin
 class UserInfoAdmin(UserAdmin):
-    list_display = ['id','username', 'email', 'mobile', 'money', 'integral', 'avatar','last_name', 'is_superuser'] # 显示字段
+    list_display = ['id','username', 'email', 'mobile', 'money', 'integral', 'avatar','last_name', 'sex','description', 'user_type', 'is_superuser'] # 显示字段
     list_display_links = ['id', 'username'] # 可以点击的字段
     search_fields = ['username', 'email', 'mobile', 'last_name']  # 搜索字段
     list_filter = ['username', 'email', 'mobile', 'last_name']    # 过滤字段
     list_per_page = 10
     ordering = ['id']   # 排序
-    readonly_fields = ['money', 'integral'] # 只读字段
-    fieldsets = (None, {'fields': ('username', 'is_superuser', 'is_staff', 'is_active', 'email', 'mobile', 'money', 'integral', 'avatar', 'last_name', 'groups', 'user_permissions')}),
+    readonly_fields = ['money', 'integral', 'openid']  # 只读字段
+    fieldsets = (None, {'fields': ('username', 'is_superuser', 'is_staff', 'is_active', 'email', 'mobile', 'money', 'integral', 'avatar', 'last_name', 'sex','user_type','description','groups', 'user_permissions')}),
     add_fieldsets = (None, {'classes': ('wide',), 'fields': (
-    'username', 'password1', 'password2', 'mobile', 'is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions')}),
+    'username', 'password1', 'password2', 'mobile', 'is_superuser', 'is_staff', 'is_active', 'user_type', 'groups', 'user_permissions')}),
 class AddressAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'phone', 'receiver', 'province', 'city', 'county', 'detail', 'is_default']
     list_display_links = ['id', 'user']

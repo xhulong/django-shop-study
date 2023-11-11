@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('global', '0005_wechatconfiguration'),
+        ('global_system', '0005_wechatconfiguration'),
     ]
 
     operations = [
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('tencent_sms_template_id', models.CharField(blank=True, max_length=200, null=True, verbose_name='短信模板ID')),
                 ('tencent_sms_secretid', models.CharField(blank=True, max_length=200, null=True, verbose_name='短信应用secretid')),
                 ('tencent_sms_secretkey', models.CharField(blank=True, max_length=200, null=True, verbose_name='短信应用secretkey')),
-                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='sms_configuration', to='global.siteconfiguration', verbose_name='关联的系统配置')),
+                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='sms_configuration', to='global_system.siteconfiguration', verbose_name='关联的系统配置')),
             ],
             options={
                 'verbose_name': '短信配置',
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('qq_appid', models.CharField(blank=True, max_length=200, null=True, verbose_name='QQ登录APPID')),
                 ('qq_appkey', models.CharField(blank=True, max_length=200, null=True, verbose_name='QQ登录APPKEY')),
-                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='qq_configuration', to='global.siteconfiguration', verbose_name='关联的系统配置')),
+                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='qq_configuration', to='global_system.siteconfiguration', verbose_name='关联的系统配置')),
             ],
             options={
                 'verbose_name': 'QQ配置',
@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
                 ('qiniu_secret_key', models.CharField(blank=True, max_length=200, null=True, verbose_name='七牛云SecretKey')),
                 ('qiniu_bucket_name', models.CharField(blank=True, max_length=200, null=True, verbose_name='七牛云存储空间名称')),
                 ('qiniu_bucket_domain', models.CharField(blank=True, max_length=200, null=True, verbose_name='七牛云存储空间域名')),
-                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='qiniu_configuration', to='global.siteconfiguration', verbose_name='关联的系统配置')),
+                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='qiniu_configuration', to='global_system.siteconfiguration', verbose_name='关联的系统配置')),
             ],
             options={
                 'verbose_name': '七牛云配置',
@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
                 ('email_host_user', models.CharField(blank=True, max_length=200, null=True, verbose_name='发送邮件的邮箱')),
                 ('email_host_password', models.CharField(blank=True, max_length=200, null=True, verbose_name='在邮箱中设置的客户端授权密码')),
                 ('email_use_ssl', models.BooleanField(default=False, verbose_name='是否使用了SSL或者TLS')),
-                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='email_configuration', to='global.siteconfiguration', verbose_name='关联的系统配置')),
+                ('site_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='email_configuration', to='global_system.siteconfiguration', verbose_name='关联的系统配置')),
             ],
             options={
                 'verbose_name': '邮箱配置',

@@ -64,7 +64,7 @@ class AppConfigurationAdmin(SingletonModelAdmin):
     inlines = [IndexConfigurationAdmin, UserCenterConfigurationAdmin]
 
 class CarouselAdmin(admin.ModelAdmin):
-    list_display = ('carousel_name', 'carousel_image', 'carousel_link', 'carousel_status', 'create_time', 'update_time')
+    list_display = ('carousel_name', 'carousel_image', 'carousel_link', 'carousel_status', 'carousel_order', 'create_time', 'update_time')
     list_display_links = ['carousel_name', 'carousel_image']
     search_fields = ['carousel_name', 'carousel_image']
     list_filter = ['carousel_name', 'carousel_image']

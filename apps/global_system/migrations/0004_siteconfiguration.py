@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('global', '0003_announcement_notice_time'),
+        ('global_system', '0003_announcement_notice_time'),
     ]
 
     operations = [

@@ -19,12 +19,18 @@ from django.urls import path, include, re_path
 
 from rest_framework.documentation import include_docs_urls
 
-from apps.user.views import FileView
+from apps.user.views import FileView, FileUploadView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('apps.user.urls'), name='user'),
     path('docs/', include_docs_urls(title='API接口文档', description='xxx描述')),
-    re_path(r'files/(.+?)/', FileView.as_view(), name='file'),
+    # re_path(r'files/(.+?)/', FileView.as_view(), name='file'),
+    re_path(r'files/(?P<path>.+)', FileView.as_view(), name='file'),
+    # 文件上传
+    path('api/upload/', FileUploadView.as_view(), name='upload'),
+    path('api/upload/avatar/', FileView.as_view(), name='upload'),
     path('api/good/', include('apps.good.urls'), name='good'),
+    # 全局配置
+    path('api/global_system/', include('apps.global_system.urls'), name='global_system'),
 ]

@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('global', '0006_remove_siteconfiguration_site_close_reason_and_more'),
+        ('global_system', '0006_remove_siteconfiguration_site_close_reason_and_more'),
     ]
 
     operations = [

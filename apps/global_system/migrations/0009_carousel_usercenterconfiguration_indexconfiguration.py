@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('global', '0008_appconfiguration'),
+        ('global_system', '0008_appconfiguration'),
     ]
 
     operations = [
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('user_center_vip', models.BooleanField(default=True, verbose_name='个人vip标签是否显示')),
                 ('user_center_wallet', models.BooleanField(default=True, verbose_name='个人钱包是否显示')),
-                ('app_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='user_center_configuration', to='global.appconfiguration', verbose_name='关联的app配置')),
+                ('app_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='user_center_configuration', to='global_system.appconfiguration', verbose_name='关联的app配置')),
             ],
             options={
                 'verbose_name': '个人中心配置',
@@ -52,8 +52,8 @@ class Migration(migrations.Migration):
                 ('index_demand_bg', models.ImageField(blank=True, null=True, upload_to='index/%Y/%m/%d/', verbose_name='首页需求背景图')),
                 ('index_demand_publish_bg', models.ImageField(blank=True, null=True, upload_to='index/%Y/%m/%d/', verbose_name='首页需求发布背景图')),
                 ('index_ai_bg', models.ImageField(blank=True, null=True, upload_to='index/%Y/%m/%d/', verbose_name='首页ai背景图')),
-                ('app_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='index_configuration', to='global.appconfiguration', verbose_name='关联的app配置')),
-                ('index_carousel', models.ManyToManyField(blank=True, related_name='index_carousel', to='global.carousel', verbose_name='首页轮播图')),
+                ('app_configuration', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='index_configuration', to='global_system.appconfiguration', verbose_name='关联的app配置')),
+                ('index_carousel', models.ManyToManyField(blank=True, related_name='index_carousel', to='global_system.carousel', verbose_name='首页轮播图')),
             ],
             options={
                 'verbose_name': '首页配置',

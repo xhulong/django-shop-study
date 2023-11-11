@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('global', '0007_qiniuconfiguration_qiniu_enable'),
+        ('global_system', '0007_qiniuconfiguration_qiniu_enable'),
     ]
 
     operations = [

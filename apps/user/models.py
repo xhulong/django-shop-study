@@ -9,10 +9,30 @@ from common.db import BaseModel
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser, BaseModel):
+    """用户模型类"""
+    SEX_CHOICES = [
+        (0, '男'),
+        (1, '女'),
+        (3, '保密')
+    ]
+    # 用户客户端类型，小程序，h5，app
+    USER_TYPE_CHOICES = [
+        (0, '小程序'),
+        (1, 'h5'),
+        (2, 'app')
+    ]
     mobile = models.CharField(max_length=11, verbose_name="手机号",default="")
-    avatar = models.ImageField(verbose_name="用户头像", null=True, blank=True)
+    avatar = models.ImageField(verbose_name="用户头像", null=True, blank=True, upload_to="avatar")
     money = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="用户余额", default=0)
     integral = models.IntegerField(verbose_name="用户积分", default=0)
+    # 性别
+    sex = models.IntegerField(choices=SEX_CHOICES, verbose_name='性别', default=3)
+    # 个性签名
+    description = models.CharField(max_length=100, verbose_name='个性签名', null=True, blank=True)
+    # openid
+    openid = models.CharField(max_length=100, verbose_name='openid', null=True, blank=True)
+    # 用户类型
+    user_type = models.IntegerField(choices=USER_TYPE_CHOICES, verbose_name='用户类型', default=1)
 
     """用户模型类"""
     class Meta:
@@ -54,7 +74,7 @@ class Area(models.Model):
 class VerifyCode(models.Model):
     """验证码"""
     code = models.CharField(max_length=10, verbose_name="验证码")
-    mobile = models.CharField(max_length=11, verbose_name="手机号")
+    mobile = models.CharField(max_length=20, verbose_name="账号")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 
     def is_expired(self, expiration_minutes=5):
@@ -74,6 +94,9 @@ class VerifyCode(models.Model):
         db_table = "ta_verifycode"
         verbose_name = "验证码"
         verbose_name_plural = verbose_name
+        indexes = [
+            models.Index(fields=['mobile',]),
+        ]
 
     def __str__(self):
         return self.code

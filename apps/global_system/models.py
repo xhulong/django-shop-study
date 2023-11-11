@@ -236,7 +236,7 @@ class IndexConfiguration(SingletonModel):
     app_configuration = models.OneToOneField(AppConfiguration, on_delete=models.CASCADE,
                                               related_name='index_configuration', verbose_name='关联的app配置')
     # 首页轮播图
-    index_carousel = models.ManyToManyField('global.Carousel', related_name='index_carousel', blank=True, verbose_name='首页轮播图')
+    index_carousel = models.ManyToManyField('apps.global_system.Carousel', related_name='index_carousel', blank=True, verbose_name='首页轮播图')
     # 首页title
     index_title = models.CharField(max_length=200, verbose_name='首页title', null=True, blank=True)
     # 首页description
@@ -264,9 +264,9 @@ class UserCenterConfiguration(SingletonModel):
     app_configuration = models.OneToOneField(AppConfiguration, on_delete=models.CASCADE,
                                               related_name='user_center_configuration', verbose_name='关联的app配置')
     # 个人vip标签是否显示
-    user_center_vip = models.BooleanField(default=True, verbose_name='个人vip标签是否显示')
+    user_center_vip = models.BooleanField(default=False, verbose_name='个人vip标签是否显示')
     # 个人钱包是否显示
-    user_center_wallet = models.BooleanField(default=True, verbose_name='个人钱包是否显示')
+    user_center_wallet = models.BooleanField(default=False, verbose_name='个人钱包是否显示')
     class Meta:
         verbose_name = '个人中心配置'
         verbose_name_plural = '个人中心配置'
@@ -284,6 +284,8 @@ class Carousel(BaseModel):
     carousel_link = models.CharField(max_length=200, verbose_name='轮播图链接', null=True, blank=True)
     # 轮播图状态
     carousel_status = models.BooleanField(default=True, verbose_name='轮播图状态')
+    # 轮播图排序
+    carousel_order = models.IntegerField(default=0, verbose_name='轮播图排序')
 
     class Meta:
         verbose_name = '轮播图'

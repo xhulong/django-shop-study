@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'apps.activity',
     'apps.demand',
     'apps.order',
-    'apps.global',
+    'apps.global_system',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

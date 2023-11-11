@@ -10,7 +10,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_obtain_pair'),
     # 获取用户信息
-    path('<int:pk>/', views.UserInfoView.as_view({'get': 'retrieve'}), name='user_info'),
+    path('getUserInfo/', views.UserInfoView.as_view({'get': 'retrieve'}), name='user_info'),
     # 上传头像
     path('avatar/upload/<int:pk>/', views.UserInfoView.as_view({'post': 'upload_avatar'}), name='user_avatar_upload'),
     # 添加地址和获取地址
@@ -21,14 +21,11 @@ urlpatterns = [
     path('address/default/<int:pk>/', views.AddressView.as_view({'put': 'set_default'}), name='user_address_default'),
     # 发送短信验证码
     path('ten_sms/', views.OperateTenSms.as_view(), name='ten_sms'),
-    # 绑定手机号
-    path('mobile/bind/', views.UserInfoView.as_view({'put': 'bind_mobile'}), name='user_mobile'),
-    # 解绑
-    path('mobile/unbind/', views.UserInfoView.as_view({'put': 'unbind_mobile'}), name='user_mobile'),
     # 修改用户昵称
-    path('last_name/<int:pk>/', views.UserInfoView.as_view({'put': 'update_last_name'}), name='user_nickname'),
+    path('update_userInfo/<int:pk>/', views.UserInfoView.as_view({'put': 'update_userInfo'}), name='user_nickname'),
     # 修改用户密码
     path('password/', LoginView.as_view(), name='user_password'),
     # 发送邮箱
     path('email/send/', views.OperateEmail.as_view(), name='send_email'),
+    path('bind_account/', views.UserInfoView.as_view({'put': 'bind_account'}), name='bind_account'),
 ]

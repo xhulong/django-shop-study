@@ -1,9 +1,13 @@
+import os
 import re
 import random
 
 from django.conf import settings
+from django.http import FileResponse
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from rest_framework import status, mixins
+from rest_framework.decorators import permission_classes
 from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -21,6 +25,7 @@ from common.tencent_sms import SendTenSms
 from common.utils import send_email,random_username
 
 
+
 # Create your views here.
 
 # 重写登录方法
@@ -33,25 +38,13 @@ class LoginView(TokenObtainPairView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
         result = serializer.validated_data
-        userInfo = {
-            'user_id': serializer.user.id,
-            'username': serializer.user.username,
-            'email': serializer.user.email,
-            'mobile': serializer.user.mobile,
-            'money': serializer.user.money,
-            'integral': serializer.user.integral,
-            'avatar': serializer.user.avatar,
-        }
         data = {
             'message': '登录成功',
             'data': {
-                'userInfo': userInfo,
                 'token': result['access'],
                 'refresh': result['refresh'],
             }
         }
-
-
         return Response(data, status=status.HTTP_200_OK)
     #修改密码
     def put(self, request, *args, **kwargs):
@@ -60,7 +53,6 @@ class LoginView(TokenObtainPairView):
         phone = data.get('phone')
         password = data.get('password')
         code = data.get('code')
-        print(phone,password,code)
         if all([phone, password]) is False:
             return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
         if len(password) < 6:
@@ -111,7 +103,7 @@ class RegisterView(APIView):
             return Response({'message': '用户已存在'}, status=status.HTTP_400_BAD_REQUEST)
         # 保存用户
 
-        user = User.objects.create_user(username=random_username(), password=password,mobile=username)
+        user = User.objects.create_user(username=random_username(), password=password, mobile=username, user_type=1)
         # 删除验证码
         VerifyCode.objects.filter(mobile=username).delete()
         # 返回用户信息
@@ -124,13 +116,16 @@ class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
-
+    def retrieve(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
     # 上传头像
     def upload_avatar(self, request, *args, **kwargs):
         obj = self.get_object()
-        avatar = request.data.get('avatar')
-        if avatar is None:
-            return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
+        avatar = request.FILES.get('avatar')
+        if not avatar:
+            return Response({'message': '请选择图片'}, status=status.HTTP_400_BAD_REQUEST)
         size = avatar.size
         if size > 1024 * 1024 * 2:
             return Response({'message': '图片过大'}, status=status.HTTP_400_BAD_REQUEST)
@@ -140,79 +135,83 @@ class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
             serializer.save()
             # 数据保存成功，可以执行其他操作
         except Exception as e:
-            print(e)
             return Response({'message': '上传失败'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'message': '上传成功', 'avatar': serializer.data['avatar']}, status=status.HTTP_200_OK)
 
-    # 绑定手机
-    def bind_mobile(self, request, *args, **kwargs):
-        mobile = request.data.get('mobile')
-        code = request.data.get('code')
-        codeId = request.data.get('codeId')
-        # 校验验证码
-        result = self.verif_code(mobile, codeId, code)
-        if result is not None:
-            return result
-        # 保存用户
-        if User.objects.filter(mobile=mobile).exists():
-            return Response({'message': '手机号已绑定'}, status=status.HTTP_400_BAD_REQUEST)
-        # 判断用户是否已绑定
-        obj = request.user
-        print(obj.mobile)
-        if obj.mobile is not None and obj.mobile != "":
-            return Response({'message': '用户已绑定'}, status=status.HTTP_400_BAD_REQUEST)
-        obj.mobile = mobile
-        obj.save()
-        # 删除验证码
-        VerifyCode.objects.filter(id=codeId).delete()
-        return Response({'message': '绑定成功'}, status=status.HTTP_200_OK)
-
-    # 解绑手机
-    def unbind_mobile(self, request, *args, **kwargs):
-        mobile = request.data.get('mobile')
-        code = request.data.get('code')
-        codeId = request.data.get('codeId')
-        # 校验验证码
-        result = self.verif_code(mobile, codeId, code)
-        if result is not None:
-            return result
-        # 解绑手机（验证手机已绑定手机号）
-        obj = request.user
-        if obj.mobile != mobile:
-            return Response({'message': '手机号不正确'}, status=status.HTTP_400_BAD_REQUEST)
-        obj.mobile = ""
-        obj.save()
-        # 删除验证码
-        VerifyCode.objects.filter(id=codeId).delete()
-        return Response({'message': '解绑成功'}, status=status.HTTP_200_OK)
-
-    # 修改用户昵称
-    def update_last_name(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', True)
+    # 修改用户信息，username,sex,description
+    def update_userInfo(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', True)   # 为True时，允许部分更新
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        # 从请求数据中提取仅允许更新的字段
+        data_to_update = {k: v for k, v in request.data.items() if k in ['username', 'sex', 'description']}
+        serializer = self.get_serializer(instance, data=data_to_update, partial=partial)
         serializer.is_valid(raise_exception=True)
-        last_name = request.data.get('last_name')
-        if last_name is None or last_name == "":
-            return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
-        obj = request.user
-        obj.last_name = last_name
-        obj.save()
+        serializer.save()
         return Response({'message': '修改成功'}, status=status.HTTP_200_OK)
 
+
+    """
+    绑定手机邮箱，解绑手机邮箱
+    account: 账号
+    code: 验证码
+    type: 类型，mobile, email
+    status: 1 绑定，2 更改，3 解绑
+    """
+    def bind_account(self, request, *args, **kwargs):
+        account = request.data.get('account')
+        code = request.data.get('code')
+        type = request.data.get('type')
+        status_account = request.data.get('status')
+        # 转为数字
+        type = int(type)
+        status_account = int(status_account)
+        # 校验验证码
+        result = self.verif_code(account, code)
+        if result is not None:
+            return result
+        # 判断用户是否已绑定
+        obj = request.user
+        if type == 1:
+            # 判断status
+            if status_account == 1:
+                if obj.mobile is not None and obj.mobile != "":
+                    return Response({'message': '用户已绑定'}, status=status.HTTP_400_BAD_REQUEST)
+                obj.mobile = account
+            elif status_account == 2:
+                if obj.mobile is None or obj.mobile == "":
+                    return Response({'message': '用户未绑定'}, status=status.HTTP_400_BAD_REQUEST)
+                obj.mobile = account
+            elif status_account == 3:
+                if obj.mobile != account:
+                    return Response({'message': '手机号不正确'}, status=status.HTTP_400_BAD_REQUEST)
+                obj.mobile = ""
+        elif type == 2:
+            if status_account == 1:
+                if obj.email is not None and obj.email != "":
+                    return Response({'message': '用户已绑定'}, status=status.HTTP_400_BAD_REQUEST)
+                obj.email = account
+            elif status_account == 2:
+                if obj.email is None or obj.email == "":
+                    return Response({'message': '用户未绑定'}, status=status.HTTP_400_BAD_REQUEST)
+                obj.email = account
+            elif status_account == 3:
+                if obj.email != account:
+                    return Response({'message': '邮箱不正确'}, status=status.HTTP_400_BAD_REQUEST)
+                obj.email = ""
+        obj.save()
+        # 删除验证码
+        VerifyCode.objects.filter(mobile=account).delete()
+        return Response({'message': '操作成功'}, status=status.HTTP_200_OK)
 
 
     # 封装验证码
     @staticmethod
-    def verif_code(mobile, codeId, code):
-        if not all([mobile, codeId, code]):
+    def verif_code(mobile, code):
+        if not all([mobile, code]):
             return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
-        # 校验手机号是否合法
-        if re.match(r'^1[3-9]\d{9}$', mobile) is None:
-            return Response({'message': '手机号格式不正确'}, status=status.HTTP_400_BAD_REQUEST)
         # 校验验证码 通过返回none，不通过返回对象
         try:
-            verify_code = VerifyCode.objects.get(id=codeId, mobile=mobile, code=code)
+            verify_code = VerifyCode.objects.get(mobile=mobile, code=code)
             # 校验验证码是否过期
             if verify_code.is_expired(expiration_minutes=5):
                 return Response({'message': '验证码过期'}, status=status.HTTP_400_BAD_REQUEST)
@@ -226,14 +225,65 @@ class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
 
 # 文件访问
 class FileView(APIView):
-    def get(self, request, filename):
-        from django.conf import settings
-        from django.http import FileResponse
-        import os
-        path = os.path.join(settings.MEDIA_ROOT, filename)
-        if os.path.exists(path) is False:
+    def get(self, request, path):
+        file_path = os.path.join(settings.MEDIA_ROOT, path)
+        if os.path.exists(file_path):
+            return FileResponse(open(file_path, 'rb'))
+        else:
             return Response({'message': '文件不存在'}, status=status.HTTP_404_NOT_FOUND)
-        return FileResponse(open(path, 'rb'))
+
+    def post(self, request):
+        file = request.FILES.get('avatar')
+        if not file:
+            return Response({'message': '请选择文件'}, status=status.HTTP_400_BAD_REQUEST)
+        size = file.size
+        if size > 1024 * 1024 * 2:
+            return Response({'message': '文件过大'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 自定义上传路径
+        upload_path = 'user/'
+        file_path = os.path.join(settings.MEDIA_ROOT, upload_path, file.name)
+
+        with open(file_path, 'wb') as f:
+            for chunk in file.chunks():
+                f.write(chunk)
+                # 获取相对路径
+                relative_path = os.path.join(upload_path, file.name)
+
+                # 构建完整的URL
+                full_url = request.build_absolute_uri(settings.MEDIA_URL + relative_path)
+
+                return Response({'message': '上传成功', 'file_path': full_url},
+                                status=status.HTTP_200_OK)
+
+
+# 文件上传
+class FileUploadView(APIView):
+    permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
+    def post(self, request):
+        file = request.FILES.get('file')
+        if not file:
+            return Response({'message': '请选择文件'}, status=status.HTTP_400_BAD_REQUEST)
+        size = file.size
+        if size > 1024 * 1024 * 2:
+            return Response({'message': '文件过大'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 自定义上传路径
+        upload_path = 'user/'
+        file_path = os.path.join(settings.MEDIA_ROOT, upload_path, file.name)
+
+        with open(file_path, 'wb') as f:
+            for chunk in file.chunks():
+                f.write(chunk)
+                # 获取相对路径
+                relative_path = os.path.join(upload_path, file.name)
+
+                # 构建完整的URL
+                full_url = request.build_absolute_uri(settings.MEDIA_URL + relative_path)
+
+                return Response({'message': '上传成功', 'file_path': full_url},
+                                status=status.HTTP_200_OK)
+
 
 # 获取用户地址
 class AddressView(GenericViewSet,
@@ -299,16 +349,29 @@ class OperateEmail(APIView):
     # 限制访问频率
     throttle_classes = [AnonRateThrottle]
     def post(self, request):
-        subject = 'Hello, this is the subject'
-        message = 'This is the email message.'
+        email = request.data.get('email')
+        # 校验邮箱是否合法
+        if re.match(r'^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$', email) is None:
+            return Response({'message': '邮箱格式不正确'}, status=status.HTTP_400_BAD_REQUEST)
+        code = self.get_random_code()
+        time = 5  # 过期时间
+        # 把code和time渲染到html模板中，然后发送邮件
+        subject = '验证码'
+        html_message = render_to_string('email_verif_code.html', {
+            'verification_code': code,
+            'expiration_time': time,
+        })
         from_email = 'max@tabz.work'
-        recipient_list = ['927266886@qq.com']
-        print(111)
-        if send_email(subject, message, from_email, recipient_list):
-            return render(request, 'success_template.html', {'message': 'Email sent successfully!'})
+        recipient_list = [email]
+        if send_email(subject, '', from_email, recipient_list,html_message=html_message):
+            # 保存验证码
+            obj = VerifyCode.objects.create(code=code, mobile=email)
+            return Response({'message': '发送成功', 'codeId': obj.id}, status=status.HTTP_200_OK)
         else:
-            return render(request, 'error_template.html', {'message': 'Email sending failed!'})
-
+            return Response({'message': '发送失败'}, status=status.HTTP_400_BAD_REQUEST)
+    def get_random_code(self):
+        code = random.randrange(1000, 999999)
+        return code
 # 微信小程序登录
 # class WechatLogin(APIView):
 #     def post(self, request):
@@ -337,43 +400,43 @@ class OperateEmail(APIView):
 #             'email': user.email,
 #         }, status=status.HTTP_200_OK)
 
+# mini_getUserInfo
+class MiniWechatLogin(APIView):
 
-# class WechatLogin(APIView):
-#
-#     """ 获取opeid存储用户信息"""
-#
-#     appid = 'wxxxxxxxx'
-#     appsecret = ''
-#     jscode2session_url = "https://api.weixin.qq.com/sns/jscode2session"
-#
-#     def post(self, request, format=None):
-#         # 获取到前端回传过来的code
-#         code = json.loads(request.body).get('code')  # 这个code有效期为5分钟
-#         # 构造向wx发送请求的url
-#         url = f"{self.jscode2session_url}?appid={self.appid}&secret={self.appsecret}&js_code={code}&grant_type=authorization_code"
-#         # 向微信服务器发起get请求
-#         response = requests.get(url)
-#         try:
-#             # 这里就是拿到的openid和session_key
-#             openid = response.json()['openid']
-#             session_key = response.json()['session_key']
-#         except KeyError:
-#             return Response({'code': 'fail'})
-#         else:
-#             # 主代码块执行完执行到这里，获取或保存用户
-#             user, iscreated = User.objects.get_or_create(
-#                 username=openid,
-#                 password=openid,
-#                 defaults={'username': openid}
-#             )
-#
-#             # 采用JWT登录的话，这里就返回token信息
-#             from foodapi.utils import get_tokens_for_user
-#             token_dict = get_tokens_for_user(user)
-#             try:
-#                 userinfo = user.userinfo
-#             except UserInfo.DoesNotExist:
-#                 userinfo, isupdated = UserInfo.objects.update_or_create(owner=user, name=openid, defaults={'owner': user})
-#             avatar = f"http://{request.get_host()}/{str(userinfo.avatar)}"
-#             return Response({"code": "success", "openid": openid, "name": userinfo.name, "avatar": avatar, **token_dict}, status=status.HTTP_200_OK)
+    """ 获取opeid存储用户信息"""
+
+    appid = 'wxxxxxxxx'
+    appsecret = ''
+    jscode2session_url = "https://api.weixin.qq.com/sns/jscode2session"
+
+    def post(self, request, format=None):
+        # 获取到前端回传过来的code
+        code = json.loads(request.body).get('code')  # 这个code有效期为5分钟
+        # 构造向wx发送请求的url
+        url = f"{self.jscode2session_url}?appid={self.appid}&secret={self.appsecret}&js_code={code}&grant_type=authorization_code"
+        # 向微信服务器发起get请求
+        response = requests.get(url)
+        try:
+            # 这里就是拿到的openid和session_key
+            openid = response.json()['openid']
+            session_key = response.json()['session_key']
+        except KeyError:
+            return Response({'code': 'fail'})
+        else:
+            # 主代码块执行完执行到这里，获取或保存用户
+            user, iscreated = User.objects.get_or_create(
+                username=openid,
+                password=openid,
+                defaults={'username': openid}
+            )
+
+            # 采用JWT登录的话，这里就返回token信息
+            from foodapi.utils import get_tokens_for_user
+            token_dict = get_tokens_for_user(user)
+            try:
+                userinfo = user.userinfo
+            except UserInfo.DoesNotExist:
+                userinfo, isupdated = UserInfo.objects.update_or_create(owner=user, name=openid, defaults={'owner': user})
+            avatar = f"http://{request.get_host()}/{str(userinfo.avatar)}"
+            return Response({"code": "success", "openid": openid, "name": userinfo.name, "avatar": avatar, **token_dict}, status=status.HTTP_200_OK)
 
