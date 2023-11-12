@@ -13,7 +13,7 @@ class User(AbstractUser, BaseModel):
     SEX_CHOICES = [
         (0, '男'),
         (1, '女'),
-        (3, '保密')
+        (2, '保密')
     ]
     # 用户客户端类型，小程序，h5，app
     USER_TYPE_CHOICES = [
@@ -21,7 +21,7 @@ class User(AbstractUser, BaseModel):
         (1, 'h5'),
         (2, 'app')
     ]
-    mobile = models.CharField(max_length=11, verbose_name="手机号",default="")
+    mobile = models.CharField(max_length=11, verbose_name="手机号",null=True, blank=True)
     avatar = models.ImageField(verbose_name="用户头像", null=True, blank=True, upload_to="avatar")
     money = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="用户余额", default=0)
     integral = models.IntegerField(verbose_name="用户积分", default=0)

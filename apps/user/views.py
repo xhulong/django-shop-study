@@ -254,7 +254,7 @@ class FileView(APIView):
                 # 构建完整的URL
                 full_url = request.build_absolute_uri(settings.MEDIA_URL + relative_path)
 
-                return Response({'message': '上传成功', 'file_path': full_url},
+                return Response({'message': '上传成功', 'file_path': full_url, 'avatar': relative_path},
                                 status=status.HTTP_200_OK)
 
 
@@ -384,6 +384,8 @@ class MiniWechatLogin(APIView):
         appsecret = wechat_config.wechat_app_appsecret
         jscode2session_url = "https://api.weixin.qq.com/sns/jscode2session"
         code = request.data.get('code')
+        nickName = request.data.get('nickName')
+        avatarUrl = request.data.get('avatar')
         if code is None:
             return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
         # 获取openid
@@ -404,7 +406,58 @@ class MiniWechatLogin(APIView):
             if User.objects.filter(openid=openid).exists():
                 user = User.objects.get(openid=openid)
             else:
-                user = User.objects.create_user(openid=openid, user_type=0)
+                # 查询username是否等于nickName
+                if User.objects.filter(username=nickName).exists():
+                    # 生成一个随机数，作为文件名的一部分
+                    random_number = random.randint(1000, 9999)
+                    # 组合文件名
+                    file_name = f"{nickName}_{random_number}"
+                    # 保存用户
+                    user = User.objects.create_user(username=file_name, openid=openid, avatar=avatarUrl, user_type=0)
+                else:
+                    # 保存用户
+                    user = User.objects.create_user(username=nickName, openid=openid, avatar=avatarUrl, user_type=0)
+        # 生成token
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(user)
+        data = {
+            'message': '登录成功',
+            'data': {
+                'token': str(refresh.access_token),
+                'refresh': str(refresh),
+            }
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    # 通过code快速登录，不需要创建用户，只需要返回token
+    def get(self, request):
+        from common.utils import GetAppConfig
+        app_config_instance = GetAppConfig()
+        wechat_config = app_config_instance.get_wechat_config()
+        appid = wechat_config.wechat_app_appid
+        appsecret = wechat_config.wechat_app_appsecret
+        jscode2session_url = "https://api.weixin.qq.com/sns/jscode2session"
+        code = request.query_params.get('code')
+        if code is None:
+            return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
+        # 获取openid
+        url = f"{jscode2session_url}?appid={appid}&secret={appsecret}&js_code={code}&grant_type=authorization_code"
+        # 向微信服务器发起get请求
+        response = requests.get(url)
+        try:
+            # 这里就是拿到的openid和session_key
+            openid = response.json()['openid']
+            session_key = response.json()['session_key']    # session_key是用来解密用户信息的
+        except KeyError:
+            errcode = response.json()['errcode']
+            errmsg = response.json()['errmsg']
+            return Response({'message': errmsg, 'errcode': errcode}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # 主代码块执行完执行到这里，获取或保存用户
+            # 判断用户是否存在
+            if User.objects.filter(openid=openid).exists():
+                user = User.objects.get(openid=openid)
+            else:
+                return Response({'message': '用户不存在'}, status=status.HTTP_400_BAD_REQUEST)
         # 生成token
         from rest_framework_simplejwt.tokens import RefreshToken
         refresh = RefreshToken.for_user(user)
