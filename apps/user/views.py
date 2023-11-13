@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from rest_framework import status, mixins
 from rest_framework.decorators import permission_classes
+from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -19,6 +20,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from apps.school.models import School
 from apps.user.models import User, Address, VerifyCode
 from apps.user.serializer import UserSerializer, AddressSerializer
 from common.permissions import IsAddressPermissions,IsOwnerOrReadOnly
@@ -148,6 +150,18 @@ class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
         serializer = self.get_serializer(instance, data=data_to_update, partial=partial)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response({'message': '修改成功'}, status=status.HTTP_200_OK)
+    # 修改用户所属学校
+    def update_school(self, request, *args, **kwargs):
+        instance = self.get_object()
+        school_id = request.data.get('school_id')
+        school = get_object_or_404(School, id=school_id)
+        # 判断学校是否被禁用
+        if school.status is False:
+            return Response({'message': '学校已被禁用'}, status=status.HTTP_400_BAD_REQUEST)
+        # 修改用户所属学校
+        instance.school = school
+        instance.save()
         return Response({'message': '修改成功'}, status=status.HTTP_200_OK)
 
 

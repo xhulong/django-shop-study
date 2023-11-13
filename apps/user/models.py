@@ -33,6 +33,8 @@ class User(AbstractUser, BaseModel):
     openid = models.CharField(max_length=100, verbose_name='openid', null=True, blank=True)
     # 用户类型
     user_type = models.IntegerField(choices=USER_TYPE_CHOICES, verbose_name='用户类型', default=1)
+    # 关联学校模型，一个用户只能关联一个学校
+    school = models.ForeignKey('school.School', on_delete=models.SET_NULL, verbose_name='学校', null=True, blank=True)
 
     """用户模型类"""
     class Meta:

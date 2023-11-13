@@ -33,4 +33,6 @@ urlpatterns = [
     path('api/good/', include('apps.good.urls'), name='good'),
     # 全局配置
     path('api/global_system/', include('apps.global_system.urls'), name='global_system'),
+    # 学校列表
+    path('api/school/', include('apps.school.urls'), name='school'),
 ]

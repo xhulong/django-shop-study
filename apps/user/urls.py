@@ -23,6 +23,8 @@ urlpatterns = [
     path('ten_sms/', views.OperateTenSms.as_view(), name='ten_sms'),
     # 修改用户昵称
     path('update_userInfo/<int:pk>/', views.UserInfoView.as_view({'put': 'update_userInfo'}), name='user_nickname'),
+    # 修改用户所属学校
+    path('update_school/<int:pk>/', views.UserInfoView.as_view({'put': 'update_school'}), name='user_school'),
     # 修改用户密码
     path('password/', LoginView.as_view(), name='user_password'),
     # 发送邮箱
