@@ -28,11 +28,13 @@ urlpatterns = [
     # re_path(r'files/(.+?)/', FileView.as_view(), name='file'),
     re_path(r'files/(?P<path>.+)', FileView.as_view(), name='file'),
     # 文件上传
-    path('api/upload/', FileUploadView.as_view(), name='upload'),
-    path('api/upload/avatar/', FileView.as_view(), name='upload'),
+    path('api/upload/', FileUploadView.as_view(), name='upload'),   # 需要登录
+    path('api/upload/file/', FileView.as_view(), name='upload'),  # 无需登录
     path('api/good/', include('apps.good.urls'), name='good'),
     # 全局配置
     path('api/global_system/', include('apps.global_system.urls'), name='global_system'),
     # 学校列表
     path('api/school/', include('apps.school.urls'), name='school'),
+    # 文章
+    path('api/article/', include('apps.article.urls'), name='article'),
 ]

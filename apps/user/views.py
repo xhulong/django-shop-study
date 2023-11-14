@@ -126,7 +126,7 @@ class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):
     # 上传头像
     def upload_avatar(self, request, *args, **kwargs):
         obj = self.get_object()
-        avatar = request.FILES.get('avatar')
+        avatar = request.FILES.get('file')
         if not avatar:
             return Response({'message': '请选择图片'}, status=status.HTTP_400_BAD_REQUEST)
         size = avatar.size
@@ -248,7 +248,7 @@ class FileView(APIView):
             return Response({'message': '文件不存在'}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
-        file = request.FILES.get('avatar')
+        file = request.FILES.get('file')
         if not file:
             return Response({'message': '请选择文件'}, status=status.HTTP_400_BAD_REQUEST)
         size = file.size
@@ -268,7 +268,7 @@ class FileView(APIView):
                 # 构建完整的URL
                 full_url = request.build_absolute_uri(settings.MEDIA_URL + relative_path)
 
-                return Response({'message': '上传成功', 'file_path': full_url, 'avatar': relative_path},
+                return Response({'message': '上传成功', 'file_path': full_url, 'file': relative_path},
                                 status=status.HTTP_200_OK)
 
 

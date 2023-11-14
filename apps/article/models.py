@@ -32,8 +32,10 @@ class Article(BaseModel):
     title = models.CharField(max_length=50, verbose_name='文章标题', help_text='文章标题')
     content = models.TextField(verbose_name='文章内容', help_text='文章内容')
     files = models.ManyToManyField(ArticleFile, verbose_name='文件', help_text='文件', related_name='articles', blank=True)
-    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='用户', help_text='用户', related_name='user_articles')
-    school = models.ForeignKey('school.School', on_delete=models.CASCADE, verbose_name='学校', help_text='学校', related_name='school_articles')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='用户', help_text='用户',
+                             related_name='user_articles', blank=False, null=False)
+    school = models.ForeignKey('school.School', on_delete=models.CASCADE, verbose_name='学校', help_text='学校',
+                               related_name='school_articles', blank=False, null=False)
     status = models.BooleanField(default=True, verbose_name='是否启用', help_text='是否启用')
     is_delete = models.BooleanField(default=False, verbose_name='是否删除', help_text='是否删除')
     is_top = models.BooleanField(default=False, verbose_name='是否置顶', help_text='是否置顶')

@@ -222,6 +222,14 @@ class AppConfiguration(SingletonModel):
     app_activity_audit = models.BooleanField(default=True, verbose_name='活动是否需要审核')
     # 闲置是否需要审核
     app_idle_audit = models.BooleanField(default=True, verbose_name='闲置是否需要审核')
+    # 需求是否需要审核
+    app_demand_audit = models.BooleanField(default=True, verbose_name='需求是否需要审核')
+    # 评论是否需要审核
+    app_comment_audit = models.BooleanField(default=True, verbose_name='评论是否需要审核')
+    # 帖子匿名是否开启
+    app_post_anonymous = models.BooleanField(default=True, verbose_name='帖子匿名是否开启')
+    # 评论匿名是否开启
+    app_comment_anonymous = models.BooleanField(default=True, verbose_name='评论匿名是否开启')
 
     class Meta:
         verbose_name = 'app配置'
