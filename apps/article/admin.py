@@ -7,7 +7,7 @@ class ArticleFileInline(admin.TabularInline):
 
 class ArticleAdmin(admin.ModelAdmin):
     inlines = [ArticleFileInline]
-    list_display = ('title', 'user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit', 'audit_user')
+    list_display = ('user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit', 'audit_user')
 
 class ArticleCommentAdmin(admin.ModelAdmin):
     list_display = ('content', 'user', 'article', 'parent', 'is_delete')

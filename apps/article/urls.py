@@ -6,7 +6,7 @@ from apps.article.views import ArticleListCreateAPIView, ArticleDetailAPIView, A
 
 urlpatterns = [
     # 文章URL
-    path('articles/', ArticleListCreateAPIView.as_view(), name='article-list-create'),
+    path('articles/', ArticleListCreateAPIView.as_view({'get': 'list', 'post': 'create'}), name='article-list-create'),
     path('articles/<int:pk>/', ArticleDetailAPIView.as_view(), name='article-detail'),
 
     # 文章文件URL

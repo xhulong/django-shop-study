@@ -17,7 +17,7 @@ class ArticleFile(BaseModel):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return str(self.file)
+        return str(self.id)
 
 class Article(BaseModel):
     """
@@ -29,9 +29,8 @@ class Article(BaseModel):
         (1, '审核通过'),
         (2, '审核未通过')
     ]
-    title = models.CharField(max_length=50, verbose_name='文章标题', help_text='文章标题')
     content = models.TextField(verbose_name='文章内容', help_text='文章内容')
-    files = models.ManyToManyField(ArticleFile, verbose_name='文件', help_text='文件', related_name='articles', blank=True)
+    files = models.ManyToManyField(ArticleFile, verbose_name='文件', help_text='文件', null=True, blank=True, related_name='files')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='用户', help_text='用户',
                              related_name='user_articles', blank=False, null=False)
     school = models.ForeignKey('school.School', on_delete=models.CASCADE, verbose_name='学校', help_text='学校',
@@ -50,7 +49,7 @@ class Article(BaseModel):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.title
+        return self.content
 
 class ArticleComment(BaseModel):
     """
