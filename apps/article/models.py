@@ -58,6 +58,8 @@ class ArticleComment(BaseModel):
     content = models.TextField(verbose_name='评论内容', help_text='评论内容')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='用户', help_text='用户')
     article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name='文章', help_text='文章')
+    # 是否匿名
+    is_anonymous = models.BooleanField(default=False, verbose_name='是否匿名', help_text='是否匿名')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, verbose_name='父级评论', help_text='父级评论')
     # 审核状态
     AUDIT_STATUS_CHOICES = [

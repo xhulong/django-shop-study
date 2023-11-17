@@ -4,13 +4,18 @@ from .models import Article, ArticleComment, ArticleLike, ArticleView, ArticleFi
 class ArticleFileInline(admin.TabularInline):
     model = Article.files.through   # 通过中间表关联
     extra = 1   # 控制额外多几个
+    verbose_name = '文件'
+    verbose_name_plural = verbose_name
 
 class ArticleAdmin(admin.ModelAdmin):
     inlines = [ArticleFileInline]
-    list_display = ('user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit', 'audit_user')
-
+    list_display = ('content', 'user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit', 'audit_user')
+    # 允许点击列头进行排序
+    sortable_by = ('user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit', 'audit_user')
+    # 筛选字段
+    list_filter = ('content', 'user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit', 'audit_user')
 class ArticleCommentAdmin(admin.ModelAdmin):
-    list_display = ('content', 'user', 'article', 'parent', 'is_delete')
+    list_display = ('content', 'user', 'article', 'parent', 'is_anonymous', 'is_audit', 'is_delete', 'create_time')
 
 class ArticleLikeAdmin(admin.ModelAdmin):
     list_display = ('user', 'article')
