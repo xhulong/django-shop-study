@@ -24,22 +24,22 @@ class ArticleListCreateGenericViewSet(viewsets.GenericViewSet,mixins.ListModelMi
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly] # IsAuthenticated必须登录才能访问
     pagination_class = ArticlePagination
     serializer_class = ArticleSerializer
-    filter_class = ArticleFilter
+    filterset_class = ArticleFilter
 
     def get_queryset(self):
         queryset = Article.objects.filter(is_delete=False, is_audit=1).order_by('-is_top', '-is_hot', '-create_time')
         return queryset
-    def list(self, request, *args, **kwargs):
-        # 查询每个文章关联的用户信息，学校信息，文件信息
-        # 比如用户头像，学校名称，文件路径
-        queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True, context={'request': request})
-            return self.get_paginated_response(data=serializer.data)
-        serializer = self.get_serializer(queryset, many=True, context={'request': request})
-        print()
-        return Response(serializer.data)
+    # def list(self, request, *args, **kwargs):
+    #     # 查询每个文章关联的用户信息，学校信息，文件信息
+    #     # 比如用户头像，学校名称，文件路径
+    #     queryset = self.get_queryset()
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True, context={'request': request})
+    #         return self.get_paginated_response(data=serializer.data)
+    #     serializer = self.get_serializer(queryset, many=True, context={'request': request})
+    #     print()
+    #     return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         app_config = AppConfiguration.objects.first()
