@@ -44,6 +44,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         # 如果没得点赞，就返回空列表
         if len(like_all) == 0:
             data['like_users'] = []
+            data['is_like'] = False
             return data
         like_users_list = []
         for like in like_all:

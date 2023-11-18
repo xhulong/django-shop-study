@@ -25,6 +25,7 @@ class Goods(BaseModel):
     desc = models.CharField(max_length=50, verbose_name='商品描述', help_text='商品描述')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='商品价格', help_text='商品价格')
     cover = models.ImageField(upload_to='good', null=True, blank=True, verbose_name='商品封面', help_text='商品封面')
+    # images = models.ManyToManyField('common.Image', verbose_name='商品图片', help_text='商品图片', blank=True)
     stock = models.IntegerField(default=0, verbose_name='商品库存', help_text='商品库存')
     is_on_sale = models.BooleanField(default=True, verbose_name='是否上架', help_text='是否上架')
     recommend = models.BooleanField(default=False, verbose_name='是否推荐', help_text='是否推荐')
@@ -36,20 +37,6 @@ class Goods(BaseModel):
 
     def __str__(self):
         return self.title
-
-class GoodsDetail(BaseModel):
-    goods = models.OneToOneField(Goods, on_delete=models.CASCADE, verbose_name='商品', help_text='商品')
-    producer = models.CharField(max_length=20, verbose_name='生产厂家', help_text='生产厂家')
-    norms = models.CharField(max_length=20, verbose_name='商品规格', help_text='商品规格')
-    detail = RichTextField(verbose_name='商品详情', help_text='商品详情', null=True, blank=True)
-
-    class Meta:
-        db_table = 'ta_goods_detail'
-        verbose_name = '商品详情'
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return self.goods.title
 
 # 商品轮播图
 class GoodsBanner(BaseModel):
@@ -67,18 +54,6 @@ class GoodsBanner(BaseModel):
     def __str__(self):
         return self.title
 
-# 商品收藏
-class GoodsCollection(BaseModel):
-    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='用户', help_text='用户')
-    goods = models.ForeignKey(Goods, on_delete=models.CASCADE, verbose_name='商品', help_text='商品')
-
-    class Meta:
-        db_table = 'ta_goods_collection'
-        verbose_name = '商品收藏'
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return self.user.username
 
 
 

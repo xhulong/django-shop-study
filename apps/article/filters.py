@@ -6,4 +6,4 @@ class ArticleFilter(filters.FilterSet):
     user = filters.NumberFilter(field_name='user', lookup_expr='exact')
     class Meta:
         model = Article
-        fields = ['content', 'user', 'school']
+        fields = ['content', 'user', 'school', 'is_audit']

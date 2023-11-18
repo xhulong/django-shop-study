@@ -27,7 +27,7 @@ class ArticleListCreateGenericViewSet(viewsets.GenericViewSet,mixins.ListModelMi
     filterset_class = ArticleFilter
 
     def get_queryset(self):
-        queryset = Article.objects.filter(is_delete=False, is_audit=1).order_by('-is_top', '-is_hot', '-create_time')
+        queryset = Article.objects.filter(is_delete=False).order_by('-is_top', '-is_hot', '-create_time')
         return queryset
     # def list(self, request, *args, **kwargs):
     #     # 查询每个文章关联的用户信息，学校信息，文件信息
@@ -74,10 +74,10 @@ class ArticleListCreateGenericViewSet(viewsets.GenericViewSet,mixins.ListModelMi
         return Response({'message': '发布成功'}, status=status.HTTP_200_OK, headers=headers)
 
 
-class ArticleDetailAPIView(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+class ArticleDetailGenericViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ArticleSerializer
-    queryset = Article.objects.filter(is_delete=False, is_audit=1)
+    queryset = Article.objects.filter(is_delete=False)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -87,8 +87,10 @@ class ArticleDetailAPIView(viewsets.GenericViewSet, mixins.RetrieveModelMixin, m
     def update(self, request, *args, **kwargs):
         # 修改文章
         instance = self.get_object()
-        if instance.user != request.user:
-            return Response({'message': '不能修改其他用户的文章'}, status=status.HTTP_400_BAD_REQUEST)
+        # 判断是不是超级管理员
+        if request.user.is_superuser == False:
+            if instance.user != request.user:
+                return Response({'message': '不能修改其他用户的文章'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -97,8 +99,10 @@ class ArticleDetailAPIView(viewsets.GenericViewSet, mixins.RetrieveModelMixin, m
     def destroy(self, request, *args, **kwargs):
         # 删除文章
         instance = self.get_object()
-        if instance.user != request.user:
-            return Response({'message': '不能删除其他用户的文章'}, status=status.HTTP_400_BAD_REQUEST)
+        # 判断是不是超级管理员
+        if request.user.is_superuser == False:
+            if instance.user != request.user:
+                return Response({'message': '不能删除其他用户的文章'}, status=status.HTTP_400_BAD_REQUEST)
         instance.is_delete = True
         instance.save()
         return Response({'message': '删除成功'}, status=status.HTTP_200_OK)

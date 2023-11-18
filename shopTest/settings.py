@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'apps.demand',
     'apps.order',
     'apps.article',
+    'apps.file'
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

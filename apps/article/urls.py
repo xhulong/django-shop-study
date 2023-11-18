@@ -1,13 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from apps.article.views import ArticleListCreateGenericViewSet, ArticleDetailAPIView, ArticleFileDetailAPIView, \
+from apps.article.views import ArticleListCreateGenericViewSet, ArticleDetailGenericViewSet, ArticleFileDetailAPIView, \
     ArticleFileListCreateAPIView, ArticleLikeGenericViewSet, ArticleViewGenericViewSet, ArticleCommentGenericViewSet
 
 urlpatterns = [
     # 文章URL
     path('articles/', ArticleListCreateGenericViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('articles/<int:pk>/', ArticleDetailAPIView.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    path('articles/<int:pk>/', ArticleDetailGenericViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 
     # 文章文件URL
     path('article-files/', ArticleFileListCreateAPIView.as_view()),

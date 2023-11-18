@@ -3,9 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.good.models import GoodsGroup, GoodsBanner, Goods, GoodsCollection, GoodsDetail
-from apps.good.serializer import GoodsGroupSerializer, GoodsBannerSerializer, GoodsSerializer, \
-    GoodsCollectionSerializer, GoodsDetailSerializer
+from apps.good.models import GoodsGroup, GoodsBanner, Goods
+from apps.good.serializer import GoodsGroupSerializer, GoodsBannerSerializer, GoodsSerializer
 
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
@@ -73,39 +72,6 @@ class GoodsView(ReadOnlyModelViewSet):
         except GoodsDetail.DoesNotExist:
             result['detailInfo'] = ''
         return Response(result)
-
-
-class GoodsCollectionView(GenericViewSet,
-                    mixins.CreateModelMixin,
-                    mixins.DestroyModelMixin,
-                    mixins.ListModelMixin):
-    queryset = GoodsCollection.objects.all()
-    serializer_class = GoodsCollectionSerializer
-    filterset_fields = ['user']
-    permission_classes = [IsAuthenticated,IsAddressPermissions]
-
-    def create(self, request, *args, **kwargs):
-        user = request.user
-        params_user_id = request.data.get('user')
-        if user.id != int(params_user_id):
-            return Response({'error': '没有权限'}, status=status.HTTP_400_BAD_REQUEST)
-        # 判断是否已经收藏
-        goods_id = request.data.get('good')
-        if GoodsCollection.objects.filter(user=user, goods_id=goods_id).exists():
-            return Response({'error': '已经收藏'}, status=status.HTTP_400_BAD_REQUEST)
-
-        return super().create(request, *args, **kwargs)
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        queryset = queryset.filter(user=request.user)
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
 
 # 获取商品分类
 class GoodsGroupView(mixins.ListModelMixin, GenericViewSet):
