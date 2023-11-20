@@ -25,7 +25,7 @@ class Goods(BaseModel):
     desc = models.CharField(max_length=50, verbose_name='商品描述', help_text='商品描述')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='商品价格', help_text='商品价格')
     cover = models.ImageField(upload_to='good', null=True, blank=True, verbose_name='商品封面', help_text='商品封面')
-    # images = models.ManyToManyField('common.Image', verbose_name='商品图片', help_text='商品图片', blank=True)
+    images = models.ManyToManyField('file.File', verbose_name='商品图片', help_text='商品图片', blank=True)
     stock = models.IntegerField(default=0, verbose_name='商品库存', help_text='商品库存')
     is_on_sale = models.BooleanField(default=True, verbose_name='是否上架', help_text='是否上架')
     recommend = models.BooleanField(default=False, verbose_name='是否推荐', help_text='是否推荐')
@@ -33,22 +33,6 @@ class Goods(BaseModel):
     class Meta:
         db_table = 'ta_goods'
         verbose_name = '商品'
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return self.title
-
-# 商品轮播图
-class GoodsBanner(BaseModel):
-    title = models.CharField(max_length=20, verbose_name='轮播标题', help_text='轮播标题')
-    # good = models.ForeignKey(Goods, on_delete=models.CASCADE, verbose_name='商品', help_text='商品')
-    image = models.ImageField(upload_to='good/banner', null=True, blank=True, verbose_name='商品轮播图', help_text='商品轮播图')
-    seq = models.IntegerField(default=0, verbose_name='轮播顺序', help_text='轮播顺序')
-    status = models.BooleanField(default=True, verbose_name='是否显示', help_text='是否显示')
-
-    class Meta:
-        db_table = 'ta_goods_banner'
-        verbose_name = '商品轮播图'
         verbose_name_plural = verbose_name
 
     def __str__(self):

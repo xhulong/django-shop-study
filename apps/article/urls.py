@@ -1,17 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from apps.article.views import ArticleListCreateGenericViewSet, ArticleDetailGenericViewSet, ArticleFileDetailAPIView, \
-    ArticleFileListCreateAPIView, ArticleLikeGenericViewSet, ArticleViewGenericViewSet, ArticleCommentGenericViewSet
+from apps.article.views import ArticleListCreateGenericViewSet, ArticleDetailGenericViewSet, ArticleLikeGenericViewSet, ArticleViewGenericViewSet, ArticleCommentGenericViewSet
 
 urlpatterns = [
     # 文章URL
     path('articles/', ArticleListCreateGenericViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('articles/<int:pk>/', ArticleDetailGenericViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
-
-    # 文章文件URL
-    path('article-files/', ArticleFileListCreateAPIView.as_view()),
-    path('article-files/<int:pk>/', ArticleFileDetailAPIView.as_view()),
     # 点赞
     path('article-likes/<int:pk>/', ArticleLikeGenericViewSet.as_view({'post': 'create', 'delete': 'destroy'})),
     # 浏览

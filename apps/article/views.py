@@ -8,8 +8,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 from common.permissions import IsOwnerOrReadOnly
 from .filters import ArticleFilter
-from .models import Article, ArticleFile, ArticleLike, ArticleView, ArticleComment
-from .serializer import ArticleSerializer, ArticleFileSerializer, ArticleCreateSerializer, ArticleLikeSerializer, \
+from .models import Article, ArticleLike, ArticleView, ArticleComment
+from apps.file.models import File, FileSerializer
+from .serializer import ArticleSerializer, ArticleCreateSerializer, ArticleLikeSerializer, \
     ArticleViewSerializer, ArticleCommentSerializer, ArticleCommentCreateSerializer
 from ..global_system.models import AppConfiguration
 from rest_framework.pagination import PageNumberPagination
@@ -107,51 +108,51 @@ class ArticleDetailGenericViewSet(viewsets.GenericViewSet, mixins.RetrieveModelM
         instance.save()
         return Response({'message': '删除成功'}, status=status.HTTP_200_OK)
 
-class ArticleFileListCreateAPIView(APIView):
-    """
-    List all article files or create a new article file.
-    """
-    parser_classes = (MultiPartParser, FormParser,)
-
-    def get(self, request, format=None):
-        article_files = ArticleFile.objects.all()
-        serializer = ArticleFileSerializer(article_files, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = ArticleFileSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class ArticleFileDetailAPIView(APIView):
-    """
-    Retrieve, update or delete an article file instance.
-    """
-    def get_object(self, pk):
-        try:
-            return ArticleFile.objects.get(pk=pk)
-        except ArticleFile.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        article_file = self.get_object(pk)
-        serializer = ArticleFileSerializer(article_file)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format=None):
-        article_file = self.get_object(pk)
-        serializer = ArticleFileSerializer(article_file, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        article_file = self.get_object(pk)
-        article_file.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# class ArticleFileListCreateAPIView(APIView):
+#     """
+#     List all article files or create a new article file.
+#     """
+#     parser_classes = (MultiPartParser, FormParser,)
+#
+#     def get(self, request, format=None):
+#         article_files = File.objects.all()
+#         serializer = FileSerializer(article_files, many=True)
+#         return Response(serializer.data)
+#
+#     def post(self, request, format=None):
+#         serializer = FileSerializer(data=request.data, context={'request': request})
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+# class ArticleFileDetailAPIView(APIView):
+#     """
+#     Retrieve, update or delete an article file instance.
+#     """
+#     def get_object(self, pk):
+#         try:
+#             return File.objects.get(pk=pk)
+#         except File.DoesNotExist:
+#             raise Http404
+#
+#     def get(self, request, pk, format=None):
+#         article_file = self.get_object(pk)
+#         serializer = FileSerializer(article_file)
+#         return Response(serializer.data)
+#
+#     def put(self, request, pk, format=None):
+#         article_file = self.get_object(pk)
+#         serializer = FileSerializer(article_file, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     def delete(self, request, pk, format=None):
+#         article_file = self.get_object(pk)
+#         article_file.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # 对帖子浏览，使用GenericViewSet和mixins.RetrieveModelMixin, mixins.DestroyModelMixin,mixins.UpdateModelMixin
 # 由帖子点赞就在ArticleLike表中创建一条记录，取消点赞就删除一条记录

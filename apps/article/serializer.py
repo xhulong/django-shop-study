@@ -1,19 +1,14 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Article, ArticleComment, ArticleLike, ArticleView, ArticleFile
+from .models import Article, ArticleComment, ArticleLike, ArticleView
 from apps.user.serializer import UserSerializer
 from ..school.serializer import SchoolSerializer
-
-
-class ArticleFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ArticleFile
-        fields = ['id', 'file']
+from apps.file.models import File, FileSerializer
 
 class ArticleSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     school = SchoolSerializer()
-    files = ArticleFileSerializer(many=True)
+    files = FileSerializer(many=True)
     class Meta:
         model = Article
         fields = '__all__'

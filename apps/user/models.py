@@ -26,7 +26,7 @@ class User(AbstractUser, BaseModel):
     money = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="用户余额", default=0)
     integral = models.IntegerField(verbose_name="用户积分", default=0)
     # 性别
-    sex = models.IntegerField(choices=SEX_CHOICES, verbose_name='性别', default=3)
+    sex = models.IntegerField(choices=SEX_CHOICES, verbose_name='性别', default=2)
     # 个性签名
     description = models.CharField(max_length=100, verbose_name='个性签名', null=True, blank=True)
     # openid

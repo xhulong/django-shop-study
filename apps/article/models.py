@@ -1,6 +1,6 @@
 from django.db import models
 from common.db import BaseModel
-
+from apps.file.models import File
 """
 文章帖子模型
     可以上传多张图片
@@ -8,16 +8,6 @@ from common.db import BaseModel
 收藏模型
 浏览模型
 """
-class ArticleFile(BaseModel):
-    file = models.FileField(upload_to='article_files/', verbose_name='文件', help_text='文件')
-
-    class Meta:
-        db_table = 'ta_article_file'
-        verbose_name = '帖子文件'
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return str(self.id)
 
 class Article(BaseModel):
     """
@@ -30,7 +20,7 @@ class Article(BaseModel):
         (2, '审核未通过')
     ]
     content = models.TextField(verbose_name='文章内容', help_text='文章内容')
-    files = models.ManyToManyField(ArticleFile, verbose_name='文件', help_text='文件', null=True, blank=True, related_name='files')
+    files = models.ManyToManyField(File, verbose_name='文件', help_text='文件', blank=True, related_name='files')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='用户', help_text='用户',
                              related_name='user_articles', blank=False, null=False)
     school = models.ForeignKey('school.School', on_delete=models.CASCADE, verbose_name='学校', help_text='学校',

@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Article, ArticleComment, ArticleLike, ArticleView, ArticleFile
-
+from .models import Article, ArticleComment, ArticleLike, ArticleView
+from apps.file.models import File
 class ArticleFileInline(admin.TabularInline):
     model = Article.files.through   # 通过中间表关联
     extra = 1   # 控制额外多几个
@@ -30,4 +30,3 @@ admin.site.register(Article, ArticleAdmin)
 admin.site.register(ArticleComment, ArticleCommentAdmin)
 admin.site.register(ArticleLike, ArticleLikeAdmin)
 admin.site.register(ArticleView, ArticleViewAdmin)
-admin.site.register(ArticleFile, ArticleFileAdmin)

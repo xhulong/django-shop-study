@@ -4,4 +4,4 @@ from django.apps import AppConfig
 class FileConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.file'
-    varbose_name = '文件'
+    verbose_name = '文件管理'

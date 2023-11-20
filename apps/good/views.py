@@ -1,14 +1,12 @@
 from rest_framework import mixins, status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.good.models import GoodsGroup, GoodsBanner, Goods
-from apps.good.serializer import GoodsGroupSerializer, GoodsBannerSerializer, GoodsSerializer
+from apps.good.models import GoodsGroup, Goods
+from apps.good.serializer import GoodsGroupSerializer, GoodsSerializer
 
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
-from common.permissions import IsAddressPermissions
 
 """
 商品模块前台接口
@@ -33,8 +31,6 @@ class IndexView(APIView):
     def get(self, request):
         # 1.1 商品分类
         groups = GoodsGroup.objects.filter(status=True)
-        # 1.2 商品轮播图
-        banners = GoodsBanner.objects.filter(status=True)
         # 1.3 商品推荐
         recommends = Goods.objects.filter(recommend=True, is_on_sale=True)
         # 1.4 商品列表
@@ -42,13 +38,11 @@ class IndexView(APIView):
         # 序列化
         # 序列化如果有图片，返回数据需要补全完整得到图片路径，所以需要传入request
         groups_data = GoodsGroupSerializer(groups, many=True,context={'request': request}).data
-        banners_data = GoodsBannerSerializer(banners, many=True,context={'request': request}).data
         recommends_data = GoodsSerializer(recommends, many=True,context={'request': request}).data
         goods_data = GoodsSerializer(goods, many=True,context={'request': request}).data
 
         return Response({
             'groups': groups_data,
-            'banners': banners_data,
             'recommends': recommends_data,
             'good': goods_data
         })
@@ -65,13 +59,12 @@ class GoodsView(ReadOnlyModelViewSet):
         serializer = self.get_serializer(instance)
         result = serializer.data
         # 获取商品详情
-        try:
-            goods_detail = GoodsDetail.objects.get(goods=instance)
-            goods_detail_data = GoodsDetailSerializer(goods_detail).data
-            result['detailInfo'] = goods_detail_data
-        except GoodsDetail.DoesNotExist:
-            result['detailInfo'] = ''
+        result['detail'] = instance.detail
+        # 获取商品图片
+        result['images'] = [image.image.url for image in instance.images.all()]
         return Response(result)
+
+
 
 # 获取商品分类
 class GoodsGroupView(mixins.ListModelMixin, GenericViewSet):
