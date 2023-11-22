@@ -94,9 +94,9 @@ WSGI_APPLICATION = 'shopTest.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "web_shop",
-        'USER': 'root',
-        'PASSWORD': '123123',
+        'NAME': "admin_tabz_work",
+        'USER': 'admin_tabz_work',
+        'PASSWORD': 'admin_tabz_work',
         'HOST': 'localhost',
         'PORT': '3306',
     }
