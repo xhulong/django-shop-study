@@ -8,6 +8,7 @@ class UserInfoAdmin(UserAdmin):
     list_filter = ['username', 'email', 'mobile', 'last_name', 'school']    # 过滤字段
     list_per_page = 10
     ordering = ['id']   # 排序
+    list_editable = ['sex', 'is_superuser', 'school']  # 可编辑字段
     readonly_fields = ['money', 'integral', 'openid']  # 只读字段
     fieldsets = (None, {'fields': ('username', 'is_superuser', 'is_staff', 'is_active', 'school', 'email', 'mobile', 'money', 'integral', 'avatar', 'last_name', 'sex','user_type','description','groups', 'user_permissions')}),
     add_fieldsets = (None, {'classes': ('wide',), 'fields': (
