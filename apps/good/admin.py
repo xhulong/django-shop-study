@@ -1,5 +1,6 @@
 from django.contrib import admin
-from apps.good.models import GoodsGroup, Goods
+from apps.good.models import GoodsGroup, Goods, GoodsView
+
 
 class FileInline(admin.TabularInline):
     model = Goods.images.through   # 通过中间表关联
@@ -8,7 +9,7 @@ class FileInline(admin.TabularInline):
     verbose_name_plural = verbose_name
 
 class GoodsGroupAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'image', 'status']
+    list_display = ['id', 'name', 'image', 'status' ,'school']
     list_display_links = ['id', 'name']
     search_fields = ['name', 'image', 'status']
     list_filter = ['name', 'image', 'status']
@@ -16,10 +17,18 @@ class GoodsGroupAdmin(admin.ModelAdmin):
 
 class GoodsAdmin(admin.ModelAdmin):
     inlines = [FileInline]
-    list_display = ['id', 'group', 'title', 'desc', 'price', 'cover', 'stock', 'is_on_sale', 'recommend']
+    list_display = ['id', 'user', 'contact', 'school', 'group', 'title', 'desc', 'price', 'stock', 'is_on_sale', 'recommend', 'is_audit']
     list_display_links = ['id', 'title']
-    search_fields = ['group', 'title', 'desc', 'price', 'cover', 'stock', 'is_on_sale', 'recommend']
-    list_filter = ['group', 'title', 'desc', 'price', 'cover', 'stock', 'is_on_sale', 'recommend']
+    search_fields = ['group', 'title', 'desc', 'price', 'stock', 'is_on_sale', 'recommend']
+    list_filter = ['group', 'title', 'desc', 'price', 'stock', 'is_on_sale', 'recommend']
+    list_per_page = 10
+    list_editable = ['is_on_sale', 'recommend', 'is_audit']
+
+class GoodsViewAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'good', 'create_time', 'update_time']
+    list_display_links = ['id', 'user', 'good']
+    search_fields = ['user', 'good']
+    list_filter = ['user', 'good']
     list_per_page = 10
 
 
@@ -27,3 +36,4 @@ class GoodsAdmin(admin.ModelAdmin):
 
 admin.site.register(GoodsGroup, GoodsGroupAdmin)
 admin.site.register(Goods, GoodsAdmin)
+admin.site.register(GoodsView, GoodsViewAdmin)

@@ -7,7 +7,7 @@ from django.conf import settings
 from django.http import FileResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
-from rest_framework import status, mixins
+from rest_framework import status, mixins, serializers
 from rest_framework.decorators import permission_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import RetrieveModelMixin
@@ -34,21 +34,20 @@ from common.utils import send_email,random_username
 # 重写登录方法
 class LoginView(TokenObtainPairView):
     def post(self, request: Request, *args, **kwargs) -> Response:
-        serializer = self.get_serializer(data=request.data)
+        response = super().post(request, *args, **kwargs)
 
-        try:
-            serializer.is_valid(raise_exception=True)
-        except TokenError as e:
-            raise InvalidToken(e.args[0])
-        result = serializer.validated_data
-        data = {
-            'message': '登录成功',
-            'data': {
-                'token': result['access'],
-                'refresh': result['refresh'],
+        if response.status_code == status.HTTP_200_OK:
+            result = response.data
+            data = {
+                'message': '登录成功',
+                'data': {
+                    'token': result['access'],
+                    'refresh': result['refresh'],
+                }
             }
-        }
-        return Response(data, status=status.HTTP_200_OK)
+            response.data = data
+
+        return response
     #修改密码
     def put(self, request, *args, **kwargs):
         # 获取参数
