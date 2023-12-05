@@ -17,12 +17,12 @@ class GoodsGroupAdmin(admin.ModelAdmin):
 
 class GoodsAdmin(admin.ModelAdmin):
     inlines = [FileInline]
-    list_display = ['id', 'user', 'contact', 'school', 'group', 'title', 'desc', 'price', 'stock', 'is_on_sale', 'recommend', 'is_audit']
+    list_display = ['id', 'user', 'contact', 'school', 'group', 'title', 'desc', 'price', 'stock', 'is_on_sale', 'recommend', 'is_audit', 'is_delete', 'create_time', 'update_time']
     list_display_links = ['id', 'title']
     search_fields = ['group', 'title', 'desc', 'price', 'stock', 'is_on_sale', 'recommend']
     list_filter = ['group', 'title', 'desc', 'price', 'stock', 'is_on_sale', 'recommend']
     list_per_page = 10
-    list_editable = ['is_on_sale', 'recommend', 'is_audit']
+    list_editable = ['is_on_sale', 'recommend', 'is_audit', 'is_delete']
 
 class GoodsViewAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'good', 'create_time', 'update_time']

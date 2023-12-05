@@ -1,10 +1,11 @@
+from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.global_system.models import AppConfiguration
-from apps.good.models import GoodsGroup, Goods
+from apps.good.models import GoodsGroup, Goods, GoodsView
 from apps.good.serializer import GoodsGroupSerializer, GoodsSerializer, GoodsCreateSerializer, GoodsViewSerializer
 
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
@@ -50,13 +51,15 @@ class IndexView(APIView):
             'good': goods_data
         })
 
-class GoodsView(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
+class GoodsViewList(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     pagination_class = GoodsPagination
-    queryset = Goods.objects.filter(is_on_sale=True)
+    queryset = Goods.objects.filter(is_on_sale=True, is_delete=False, is_audit=True)
     serializer_class = GoodsSerializer
-    filterset_fields = ['group', 'recommend']
+    filterset_fields = ['group', 'recommend', 'title', 'desc', 'user']
     ordering_fields = ['price', 'recommend']
+    # filter_backends = [SearchFilter]
+    # search_fields = ['title', 'desc', 'contact']
 
     def create(self, request, *args, **kwargs):
         app_config = AppConfiguration.objects.first()
@@ -79,8 +82,48 @@ class GoodsView(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
         headers = self.get_success_headers(serializer.data) # 获取头部信息
         return Response({'message': message}, status=status.HTTP_200_OK, headers=headers)
 
+# 对自己的闲置查询，修改，删除
+class GoodsSelfView(GenericViewSet, mixins.ListModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    pagination_class = GoodsPagination
+    queryset = Goods.objects.all()
+    serializer_class = GoodsSerializer
+    ordering_fields = ['price', 'recommend']
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user, is_delete=False)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # if instance.is_audit == True:
+        #     return Response({'message': '已审核的商品不能删除'}, status=status.HTTP_400_BAD_REQUEST)
+        instance.is_delete = True
+        instance.save()
+        return Response({'message': '删除成功'}, status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # if instance.is_audit == True:
+        #     return Response({'message': '已审核的商品不能修改'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = GoodsCreateSerializer(instance, data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response({'message': '修改成功'}, status=status.HTTP_200_OK)
+
+# 修改商品上下架状态
+class GoodsOnSaleView(GenericViewSet, mixins.UpdateModelMixin):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Goods.objects.all()
+    serializer_class = GoodsSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_on_sale = not instance.is_on_sale
+        instance.save()
+        return Response({'message': '修改成功'}, status=status.HTTP_200_OK)
+
 class GoodsDetailView(GenericViewSet,mixins.RetrieveModelMixin):
-    queryset = Goods.objects.filter(is_on_sale=True)
+    queryset = Goods.objects.filter(is_delete=False)
     serializer_class = GoodsSerializer
 
 # 获取商品分类
@@ -92,10 +135,12 @@ class GoodsGroupView(mixins.ListModelMixin, GenericViewSet):
 class GoodsViewView(mixins.CreateModelMixin, GenericViewSet):
     queryset = Goods.objects.all()
     serializer_class = GoodsSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def create(self, request, *args, **kwargs):
         # 判断用户是否浏览过该商品
-        user = request.user.id
+        user = request.user
+        print()
         good = request.data.get('good')
         if GoodsView.objects.filter(user=user, good=good).exists():
             # 更新
@@ -103,7 +148,11 @@ class GoodsViewView(mixins.CreateModelMixin, GenericViewSet):
             instance.save()
         else:
             # 创建
-            serializer = GoodsViewSerializer(data=request.data)
+            data = {
+                'user': user.id,
+                'good': good
+            }
+            serializer = GoodsViewSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
         return Response({'message': '浏览成功'}, status=status.HTTP_200_OK)

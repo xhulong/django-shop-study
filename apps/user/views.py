@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from apps.school.models import School
 from apps.user.models import User, Address, VerifyCode
 from apps.user.serializer import UserSerializer, AddressSerializer
+from common import SparkApi
 from common.permissions import IsAddressPermissions,IsOwnerOrReadOnly
 from common.tencent_sms import SendTenSms
 from common.utils import send_email,random_username
@@ -482,3 +483,34 @@ class MiniWechatLogin(APIView):
             }
         }
         return Response(data, status=status.HTTP_200_OK)
+
+# 讯飞接口
+class OperateXunFei(APIView):
+    text = []
+
+    def get_text(self, role, content):
+        jsoncon = {'role': role, 'content': content}
+        self.text.append(jsoncon)
+        return self.text
+
+    def getlength(self, text):
+        length = 0
+        for content in text:
+            temp = content["content"]
+            leng = len(temp)
+            length += leng
+        return length
+    def checklen(self, text):
+        while (self.getlength(text) > 8000):
+            del text[0]
+        return text
+
+    def post(self, request):
+        questionFlag = request.data.get('question')
+        if questionFlag is None or questionFlag == "":
+            return Response({'message': '参数不完整'}, status=status.HTTP_400_BAD_REQUEST)
+        question = self.checklen(self.get_text('user', questionFlag))
+        SparkApi.answer = ""
+        SparkApi.main(question)
+        self.get_text('assistant', SparkApi.answer)
+        return Response({'message': '获取成功', 'answer': SparkApi.answer}, status=status.HTTP_200_OK)

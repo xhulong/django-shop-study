@@ -32,4 +32,6 @@ urlpatterns = [
     path('bind_account/', views.UserInfoView.as_view({'put': 'bind_account'}), name='bind_account'),
     # 小程序登录
     path('Login_capLogin/', views.MiniWechatLogin.as_view(), name='wx_login'),
+    # ChatGPT
+    path('chat/', views.OperateXunFei.as_view(), name='chat'),
 ]
