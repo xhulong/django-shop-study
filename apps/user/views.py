@@ -514,3 +514,49 @@ class OperateXunFei(APIView):
         SparkApi.main(question)
         self.get_text('assistant', SparkApi.answer)
         return Response({'message': '获取成功', 'answer': SparkApi.answer}, status=status.HTTP_200_OK)
+
+from channels.generic.websocket import AsyncWebsocketConsumer
+import json
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        # 获取参数
+        self.appid = self.scope['url_route']['kwargs']['appid']
+        self.domain = self.scope['url_route']['kwargs']['domain']
+        self.question = self.scope['url_route']['kwargs']['question']
+        self.room_group_name = 'chat_%s' % self.appid
+        # 加入房间
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        # 连接成功
+        await self.accept()
+        # 发送消息
+        data = SparkApi.main(self.appid, self.domain, self.question)
+        await self.send(text_data=data)
+
+    async def disconnect(self, close_code):
+        # 离开房间
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    # 接收消息
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message = text_data_json['message']
+        # 发送消息到房间
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': message
+            }
+        )
+
+    # 接收房间消息
+    async def chat_message(self, event):
+        message = event['message']
+        # 发送消息到客户端
+        await self.send(text_data=message)

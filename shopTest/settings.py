@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    # 'daphne',
     'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'ckeditor',    # 富文本编辑器
     'django_filters',   # 过滤器
     'solo',    # 单例模型
+    'channels',
     'apps.user',
     'apps.global_system',
     'apps.school',
@@ -87,7 +89,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'shopTest.wsgi.application'
-
+ASGI_APPLICATION = 'shopTest.asgi.application'  # 新增
+# daphne shopTest.asgi:application --port 8001 --bind
+# 设置通道层的通信后台 - 本地测试用
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
