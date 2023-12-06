@@ -23,6 +23,7 @@ class Ws_Param(object):
         self.host = urlparse(Spark_url).netloc
         self.path = urlparse(Spark_url).path
         self.Spark_url = Spark_url
+        self.answer = ""
 
     # 生成url
     def create_url(self):
@@ -78,8 +79,7 @@ def run(ws, *args):
 
 
 # 收到websocket消息的处理
-def on_message(ws, message):
-    # print(message)
+def on_message(ws, message, callback):
     data = json.loads(message)
     code = data['header']['code']
     if code != 0:
@@ -89,10 +89,10 @@ def on_message(ws, message):
         choices = data["payload"]["choices"]
         status = choices["status"]
         content = choices["text"][0]["content"]
-        print(content + "123",end ="")
-        global answer
-        answer += content
-        # print(1)
+        print(content,end ="")
+        # global answer
+        # answer = content
+        callback(content)
         if status == 2:
             ws.close()
 
@@ -122,22 +122,24 @@ def gen_params(appid, domain,question):
     return data
 
 
-def main(question):
-    appid = "ca70b5a7"  # 填写控制台中获取的 APPID 信息
-    api_secret = "NDc3MWQ3ZDFiOGNjYjNiMjU1NjhmOTg2"  # 填写控制台中获取的 APISecret 信息
-    api_key = "8835a158af0f2bbd58858405bef17a39"  # 填写控制台中获取的 APIKey 信息
+def main(question, callback):
+    appid = "ca70b5a7"
+    api_secret = "NDc3MWQ3ZDFiOGNjYjNiMjU1NjhmOTg2"
+    api_key = "8835a158af0f2bbd58858405bef17a39"
+    domain = "generalv3"
+    Spark_url = "ws://spark-api.xf-yun.com/v3.1/chat"
 
-    domain = "generalv3"  # v3.0版本
-    # 云端环境的服务地址
-    Spark_url = "ws://spark-api.xf-yun.com/v3.1/chat"  # v3.0环境的地址
-    # print("星火:")
     wsParam = Ws_Param(appid, api_key, api_secret, Spark_url)
-    websocket.enableTrace(False)
     wsUrl = wsParam.create_url()
-    ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close, on_open=on_open)
+    ws = websocket.WebSocketApp(
+        wsUrl,
+        on_message=lambda ws, message: on_message(ws, message, callback),
+        on_error=on_error,
+        on_close=on_close,
+        on_open=on_open
+    )
     ws.appid = appid
-    ws.question = question
     ws.domain = domain
+    ws.question = question
+    ws.on_open = on_open
     ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
-
-
