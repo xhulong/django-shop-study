@@ -55,10 +55,13 @@ class ChatConsumer(WebsocketConsumer):
 
         if 'question' in message:
             self.question = message['question']
+            self.id = message['id']
             self.checklen(self.get_text('user', self.question))
-            def callback(answer):
+            def callback(answer, status):
                 self.checklen(self.get_text('user', answer))
                 self.send(text_data=json.dumps({
-                    'message': answer
+                    'answer': answer,
+                    'status': status,
+                    'id': self.id
                 }))
             SparkApi.main(self.text, callback)

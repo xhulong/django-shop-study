@@ -12,7 +12,6 @@ from urllib.parse import urlencode
 from wsgiref.handlers import format_date_time
 
 import websocket  # 使用websocket_client
-answer = ""
 
 class Ws_Param(object):
     # 初始化
@@ -23,7 +22,6 @@ class Ws_Param(object):
         self.host = urlparse(Spark_url).netloc
         self.path = urlparse(Spark_url).path
         self.Spark_url = Spark_url
-        self.answer = ""
 
     # 生成url
     def create_url(self):
@@ -87,12 +85,10 @@ def on_message(ws, message, callback):
         ws.close()
     else:
         choices = data["payload"]["choices"]
-        status = choices["status"]
+        status = choices["status"]  # 0:正常 1:异常 2:结束
         content = choices["text"][0]["content"]
-        print(content,end ="")
-        # global answer
-        # answer = content
-        callback(content)
+        # print(content,end ="")
+        callback(content, status)
         if status == 2:
             ws.close()
 
