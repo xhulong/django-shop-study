@@ -21,4 +21,4 @@ services:
     volumes:
       - ./data/db:/var/lib/mysql
     ports:
-      - "4406:3306"
+      - "3306:3306"
