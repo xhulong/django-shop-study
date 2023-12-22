@@ -110,7 +110,7 @@ DATABASES = {
         # 'NAME': "admin_tabz_work",
         # 'USER': 'admin_tabz_work',
         # 'PASSWORD': 'admin_tabz_work',
-        'HOST': '45.13.226.75',
+        'HOST': 'db',
         'PORT': '3306',
     }
 }
