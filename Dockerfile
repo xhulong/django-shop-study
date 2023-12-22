@@ -13,12 +13,12 @@ COPY requirements.txt /code/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+# 从 GitHub 下载 wait-for-it.sh 脚本并赋予执行权限
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /code/
+RUN chmod +x /code/wait-for-it.sh
+
 # 复制项目文件到工作目录
 COPY . /code/
 
-# 复制 wait-for-it.sh 脚本到工作目录
-COPY wait-for-it.sh /code/
-RUN chmod +x /code/wait-for-it.sh
-
 # 启动 Django 应用之前，先运行 wait-for-it.sh 脚本等待 MySQL 服务完全启动
-CMD /code/wait-for-it.sh db:4406 -- python manage.py runserver 0.0.0.0:8000
+CMD /code/wait-for-it.sh db:3306 -- python manage.py runserver 0.0.0.0:8000
