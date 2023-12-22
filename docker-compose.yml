@@ -21,4 +21,13 @@ services:
     volumes:
       - ./data/db:/var/lib/mysql
     ports:
-      - "3307:3306"
+      - "3306:3306"
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/static
+    ports:
+      - "8000:80"
+volumes:
+  static_volume:

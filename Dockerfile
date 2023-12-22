@@ -21,4 +21,4 @@ RUN chmod +x /code/wait-for-it.sh
 COPY . /code/
 
 # 启动 Django 应用之前，先运行 wait-for-it.sh 脚本等待 MySQL 服务完全启动
-CMD /code/wait-for-it.sh db:3307 -- python manage.py runserver 0.0.0.0:8000
+CMD /code/wait-for-it.sh db:3306 -- python manage.py runserver 0.0.0.0:8000
