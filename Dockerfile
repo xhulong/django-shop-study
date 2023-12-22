@@ -23,7 +23,6 @@ COPY . /code/
 # 收集静态文件
 RUN python manage.py collectstatic --noinput
 
-RUN python manage.py migrate
 
 # 启动 Django 应用之前，先运行 wait-for-it.sh 脚本等待 MySQL 服务完全启动
 CMD /code/wait-for-it.sh db:3306 -- python manage.py runserver 0.0.0.0:8000
