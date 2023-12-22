@@ -19,3 +19,5 @@ services:
       MYSQL_PASSWORD: tabzxiaohu
     volumes:
       - ./data/db:/var/lib/mysql
+    ports:
+      - "4406:3306"

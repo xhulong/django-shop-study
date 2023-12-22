@@ -107,13 +107,11 @@ DATABASES = {
         'NAME': "tabzxiaohu",
         'USER': 'tabzxiaohu',
         'PASSWORD': 'tabzxiaohu',
-        # 'NAME': "admin_tabz_work",
-        # 'USER': 'admin_tabz_work',
-        # 'PASSWORD': 'admin_tabz_work',
         'HOST': 'db',
         'PORT': '4406',
     }
 }
+
 
 
 # Password validation
