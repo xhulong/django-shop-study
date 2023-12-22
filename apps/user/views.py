@@ -26,11 +26,8 @@ from apps.user.serializer import UserSerializer, AddressSerializer
 from common import SparkApi
 from common.permissions import IsAddressPermissions,IsOwnerOrReadOnly
 from common.tencent_sms import SendTenSms
-from common.utils import send_email,random_username
+from common.utils import send_email, random_username
 
-
-
-# Create your views here.
 
 # 重写登录方法
 class LoginView(TokenObtainPairView):

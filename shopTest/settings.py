@@ -104,13 +104,13 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "web_shop",
-        'USER': 'root',
-        'PASSWORD': '123123',
+        'NAME': "tabzxiaohu",
+        'USER': 'tabzxiaohu',
+        'PASSWORD': 'tabzxiaohu',
         # 'NAME': "admin_tabz_work",
         # 'USER': 'admin_tabz_work',
         # 'PASSWORD': 'admin_tabz_work',
-        'HOST': 'localhost',
+        'HOST': '45.13.226.75',
         'PORT': '3306',
     }
 }
