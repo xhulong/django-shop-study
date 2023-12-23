@@ -153,7 +153,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # 这是 Django 收集所有静态文件的地方
-STATIC_ROOT = '/code/static'
+STATIC_ROOT = os.path.join(BASE_DIR,'collect_static')
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
