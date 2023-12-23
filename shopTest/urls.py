@@ -4,8 +4,9 @@ from django.urls import path, include, re_path
 from rest_framework.documentation import include_docs_urls
 
 from apps.user.views import FileView, FileUploadView
-
+from shopTest.views import index
 urlpatterns = [
+    path('', index),
     path('admin/', admin.site.urls),
     path('api/user/', include('apps.user.urls'), name='user'),
     path('docs/', include_docs_urls(title='API接口文档', description='xxx描述')),
