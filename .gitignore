@@ -1,3 +1,4 @@
 # files文件夹不上传
 
 /files/**
+/static/
