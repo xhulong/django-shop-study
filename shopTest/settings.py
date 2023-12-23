@@ -16,7 +16,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -29,7 +28,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     '*'
 ]
-
+CSRF_TRUSTED_ORIGINS = ["https://admin.tabz.work"]
 
 # Application definition
 
@@ -45,9 +44,9 @@ INSTALLED_APPS = [
     'corsheaders',  # 支持跨域请求
     'rest_framework',
     'rest_framework_simplejwt',
-    'ckeditor',    # 富文本编辑器
-    'django_filters',   # 过滤器
-    'solo',    # 单例模型
+    'ckeditor',  # 富文本编辑器
+    'django_filters',  # 过滤器
+    'solo',  # 单例模型
     'channels',
     'apps.user',
     'apps.global_system',
@@ -67,7 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',    # 支持跨域请求
+    'corsheaders.middleware.CorsMiddleware',  # 支持跨域请求
 ]
 
 ROOT_URLCONF = 'shopTest.urls'
@@ -112,8 +111,6 @@ DATABASES = {
     }
 }
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -132,7 +129,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -144,7 +140,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -153,12 +148,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # 这是 Django 收集所有静态文件的地方
-STATIC_ROOT = os.path.join(BASE_DIR,'collect_static')
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ORIGIN_ALLOW_ALL = True    # 允许跨域请求
+CORS_ORIGIN_ALLOW_ALL = True  # 允许跨域请求
 
 # 自定义用户模型类
 AUTH_USER_MODEL = 'user.User'
@@ -204,7 +198,7 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-AUTHENTICATION_BACKENDS = [ # 自定义用户登录认证，实现多字段登录
+AUTHENTICATION_BACKENDS = [  # 自定义用户登录认证，实现多字段登录
     'common.authenticate.CustomBackend'
 ]
 
