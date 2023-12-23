@@ -155,11 +155,6 @@ STATIC_URL = '/static/'
 # 这是 Django 收集所有静态文件的地方
 STATIC_ROOT = '/code/static'
 
-# 这是你的静态文件目录列表，在开发环境中 Django 会在这些目录中查找静态文件
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
