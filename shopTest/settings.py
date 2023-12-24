@@ -100,13 +100,23 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': "tabzxiaohu",
+#         'USER': 'tabzxiaohu',
+#         'PASSWORD': 'tabzxiaohu',
+#         'HOST': 'db',
+#         'PORT': '3306',
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "tabzxiaohu",
-        'USER': 'tabzxiaohu',
-        'PASSWORD': 'tabzxiaohu',
-        'HOST': 'db',
+        'NAME': "web_shop",
+        'USER': 'root',
+        'PASSWORD': '123123',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
