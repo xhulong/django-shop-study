@@ -21,9 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-gz6le$+9%zan+7w=qay@_3ju*p=t_r)ul1#1_^d7%9myfn1j#8'
+SIMPLEUI_HOME_INFO = False  # 关闭首页信息
+SIMPLEUI_ANALYSIS = False   # 关闭统计
+SIMPLEUI_HOME_PAGE = None   # 关闭首页
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '*'
@@ -56,7 +58,8 @@ INSTALLED_APPS = [
     'apps.demand',
     'apps.order',
     'apps.article',
-    'apps.file'
+    'apps.file',
+    'apps.student_manage'
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -100,26 +103,26 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "tabzxiaohu",
-        'USER': 'tabzxiaohu',
-        'PASSWORD': 'tabzxiaohu',
-        'HOST': 'db',
-        'PORT': '3306',
-    }
-}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "web_shop",
-#         'USER': 'root',
-#         'PASSWORD': '123123',
-#         'HOST': 'localhost',
+#         'NAME': "tabzxiaohu",
+#         'USER': 'tabzxiaohu',
+#         'PASSWORD': 'tabzxiaohu',
+#         'HOST': 'db',
 #         'PORT': '3306',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "web_shop",
+        'USER': 'root',
+        'PASSWORD': '123123',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

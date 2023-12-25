@@ -13,7 +13,7 @@ class ArticleAdmin(admin.ModelAdmin):
     # 允许点击列头进行排序
     sortable_by = ('user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit', 'audit_user')
     # 筛选字段
-    list_filter = ('content', 'user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit', 'audit_user')
+    list_filter = ('user', 'school', 'status', 'is_delete', 'is_top', 'is_hot', 'is_anonymous', 'is_audit')
 class ArticleCommentAdmin(admin.ModelAdmin):
     list_display = ('content', 'user', 'article', 'parent', 'is_anonymous', 'is_audit', 'is_delete', 'create_time')
 
