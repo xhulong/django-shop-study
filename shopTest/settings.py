@@ -25,7 +25,7 @@ SIMPLEUI_HOME_INFO = False  # 关闭首页信息
 SIMPLEUI_ANALYSIS = False   # 关闭统计
 SIMPLEUI_HOME_PAGE = None   # 关闭首页
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '*'
@@ -104,26 +104,26 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "tabzxiaohu",
-        'USER': 'tabzxiaohu',
-        'PASSWORD': 'tabzxiaohu',
-        'HOST': 'db',
-        'PORT': '3306',
-    }
-}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': "web_shop",
-#         'USER': 'root',
-#         'PASSWORD': '123123',
-#         'HOST': 'localhost',
+#         'NAME': "tabzxiaohu",
+#         'USER': 'tabzxiaohu',
+#         'PASSWORD': 'tabzxiaohu',
+#         'HOST': 'db',
 #         'PORT': '3306',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "web_shop",
+        'USER': 'root',
+        'PASSWORD': '123123',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
