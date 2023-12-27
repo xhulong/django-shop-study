@@ -37,7 +37,6 @@ CSRF_TRUSTED_ORIGINS = ["https://admin.tabz.work"]
 INSTALLED_APPS = [
     # 'daphne',
     'simpleui',
-    'dbbackup',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
