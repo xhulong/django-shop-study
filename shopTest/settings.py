@@ -13,6 +13,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +26,7 @@ SIMPLEUI_HOME_INFO = False  # 关闭首页信息
 SIMPLEUI_ANALYSIS = False   # 关闭统计
 SIMPLEUI_HOME_PAGE = None   # 关闭首页
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '*'
@@ -100,7 +101,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
-
+SIMPLEUI_LOGO = 'https://qiniu.tabz.work//picGo/乒乓球拍.png'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 

@@ -102,14 +102,18 @@ class RegisterView(APIView):
         if User.objects.filter(username=username).exists():
             return Response({'message': '用户已存在'}, status=status.HTTP_400_BAD_REQUEST)
         # 保存用户
-
-        user = User.objects.create_user(username=random_username(), password=password, mobile=username, user_type=1)
+        # 判断是否是手机号，如果是手机就绑定手机，如果不是就绑定邮箱
+        if re.match(r'^1[3-9]\d{9}$', username):
+            user = User.objects.create_user(username=username, password=password, mobile=username, user_type=1)
+        else:
+            user = User.objects.create_user(username=username, password=password, email=username, user_type=1)
+            # user = User.objects.create_user(username=random_username(), password=password, mobile=username, user_type=1)
         # 删除验证码
         VerifyCode.objects.filter(mobile=username).delete()
         # 返回用户信息
         return Response({
             'message': '注册成功'
-        }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_200_OK)
 
 # 获取用户信息
 class UserInfoView(GenericViewSet,mixins.RetrieveModelMixin):

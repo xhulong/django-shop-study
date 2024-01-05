@@ -1,4 +1,3 @@
-# 返回一个html页面
 from django.shortcuts import render
 
 

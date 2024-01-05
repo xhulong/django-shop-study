@@ -27,5 +27,4 @@ class SchoolUserPermissionsAdmin(admin.ModelAdmin):
             super().save_model(request, obj, form, change)
 
 
-admin.site.site_header = "XIAOO管理系统"
-admin.site.site_title = "XIAOO管理系统"
+
