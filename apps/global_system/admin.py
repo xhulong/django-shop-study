@@ -76,5 +76,5 @@ admin.site.register(SiteConfiguration, SiteConfigurationAdmin)
 admin.site.register(AppConfiguration, AppConfigurationAdmin)
 admin.site.register(Carousel, CarouselAdmin)
 
-admin.site.site_header = "小胡子管理系统"
-admin.site.site_title = "小胡子管理系统"
+admin.site.site_header = "小胡子图书管理系统"
+admin.site.site_title = "小胡子图书管理系统"
