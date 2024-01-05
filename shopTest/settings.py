@@ -26,7 +26,7 @@ SIMPLEUI_HOME_INFO = False  # 关闭首页信息
 SIMPLEUI_ANALYSIS = False   # 关闭统计
 SIMPLEUI_HOME_PAGE = None   # 关闭首页
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '*'
